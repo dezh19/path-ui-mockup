@@ -2,7 +2,7 @@
 
 Interactive UI mockup of **PATH**, the assistance management system that Group 9 is building for **IntellectStorm**, which will host it for NGOs in Guyana.
 
-**Live demo:** see the GitHub Pages link in the repository's About section.
+**Live demo:** https://path-ui-mockup.netlify.app
 
 Start on the **sign-in page** and tap any **test account** to sign in automatically (staff accounts go through a two-step login). Password for every test account: `Demo@2026`. Once inside, the **"View as"** bar at the top switches between:
 
