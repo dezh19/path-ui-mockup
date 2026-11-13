@@ -16,4 +16,4 @@ Start on the **sign-in page** and tap any **test account** to sign in automatica
 
 This is a static mockup for CSE 2101 Software Engineering (University of Guyana). All names, numbers and records are fictional, and nothing you enter leaves your browser.
 
-Built with plain HTML, CSS and JavaScript — no frameworks and no build step. Dark glass design, made for phones first. Open `index.html` to run it locally.
+Built with plain HTML, CSS and JavaScript — no frameworks and no build step. Glass design with a light/dark mode switch (top bar), Phosphor icons, made for phones first. Open `index.html` to run it locally.
