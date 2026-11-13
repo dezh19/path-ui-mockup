@@ -19,10 +19,10 @@ const RSHORT = r => r.split(' · ')[0];
 const STAFF = {
   admin:{name:'Rochelle Bacchus', role:'Administrative staff', ini:'RB', col:'#0E7C6B'},
   cw1:{name:'Kevin Ramnarine', role:'Caseworker', ini:'KR', col:'#6D5BD0'},
-  cw2:{name:'Tamika Joseph', role:'Caseworker', ini:'TJ', col:'#E8604C'},
-  cw3:{name:'Andre Fung-A-Fat', role:'Caseworker', ini:'AF', col:'#2F80C9'},
-  mgr:{name:'Natasha Persaud', role:'Programme manager', ini:'NP', col:'#C98309'},
-  it:{name:'Marcus Hope', role:'IntellectStorm system admin', ini:'MH', col:'#D2433A'},
+  cw2:{name:'Tamika Joseph', role:'Caseworker', ini:'TJ', col:'#C2412D'},
+  cw3:{name:'Andre Fung-A-Fat', role:'Caseworker', ini:'AF', col:'#2366A8'},
+  mgr:{name:'Natasha Persaud', role:'Programme manager', ini:'NP', col:'#9A6206'},
+  it:{name:'Marcus Hope', role:'IntellectStorm system admin', ini:'MH', col:'#B8322A'},
 };
 const STATUS = {
   new:{label:'New', cls:'b-new'}, screening:{label:'Screening', cls:'b-screen'}, assigned:{label:'Assigned', cls:'b-prog'},
@@ -30,12 +30,12 @@ const STATUS = {
   docs:{label:'Documents requested', cls:'b-warn'}, closed:{label:'Closed', cls:'b-grey'},
 };
 const DRIVES = [
-  {d:'2026-11-21', t:'Christmas food hamper drive', type:'food', region:REGIONS[0], place:'Albouystown Community Centre, Georgetown', time:'9:00 AM – 2:00 PM', spots:'120 hampers'},
-  {d:'2026-11-28', t:'Back-to-school supplies', type:'edu', region:REGIONS[3], place:'Mackenzie Sports Club Hall, Linden', time:'10:00 AM – 3:00 PM', spots:'80 school kits'},
-  {d:'2026-12-05', t:'Fire relief support day', type:'house', region:REGIONS[2], place:'New Amsterdam Town Hall', time:'8:30 AM – 1:00 PM', spots:'Walk-ins welcome'},
-  {d:'2026-12-09', t:'Food voucher distribution', type:'food', region:REGIONS[1], place:'Vreed-en-Hoop Market Square', time:'9:00 AM – 12:00 PM', spots:'200 vouchers'},
-  {d:'2026-12-12', t:'Financial aid clinic', type:'fin', region:REGIONS[0], place:'Launch NGO Office, Charlestown', time:'1:00 PM – 5:00 PM', spots:'By appointment'},
-  {d:'2026-12-16', t:'Community food drive', type:'food', region:REGIONS[4], place:'Anna Regina Community Centre', time:'9:00 AM – 1:00 PM', spots:'150 hampers'},
+  {d:'2026-11-21', t:'Christmas food hamper drive', type:'food', region:REGIONS[0], place:'Albouystown Community Centre, Georgetown', time:'9:00 AM – 2:00 PM', spots:'120 hampers', cap:120, reg:96},
+  {d:'2026-11-28', t:'Back-to-school supplies', type:'edu', region:REGIONS[3], place:'Mackenzie Sports Club Hall, Linden', time:'10:00 AM – 3:00 PM', spots:'80 school kits', cap:80, reg:41},
+  {d:'2026-12-05', t:'Fire relief support day', type:'house', region:REGIONS[2], place:'New Amsterdam Town Hall', time:'8:30 AM – 1:00 PM', spots:'Walk-ins welcome', cap:60, reg:18},
+  {d:'2026-12-09', t:'Food voucher distribution', type:'food', region:REGIONS[1], place:'Vreed-en-Hoop Market Square', time:'9:00 AM – 12:00 PM', spots:'200 vouchers', cap:200, reg:122},
+  {d:'2026-12-12', t:'Financial aid clinic', type:'fin', region:REGIONS[0], place:'Launch NGO Office, Charlestown', time:'1:00 PM – 5:00 PM', spots:'By appointment', cap:30, reg:27},
+  {d:'2026-12-16', t:'Community food drive', type:'food', region:REGIONS[4], place:'Anna Regina Community Centre', time:'9:00 AM – 1:00 PM', spots:'150 hampers', cap:150, reg:33},
 ];
 
 let APPS = [
@@ -62,6 +62,7 @@ const CASES = {
       {by:'admin', when:'Nov 8, 2026 · 11:02 AM', text:'Application complete. Assigned to Kevin Ramnarine for assessment.'},
     ],
     comms:[
+      {ch:'sms', when:'Nov 11, 2026', text:'PATH: Reminder — your caseworker will call you on Nov 14 about term 2 tuition.', failed:true},
       {ch:'sms', when:'Nov 10, 2026', text:'PATH: Your application PTH-26-0139 is now In progress. Your caseworker is Kevin R.'},
       {ch:'phone', when:'Nov 9, 2026', text:'Called applicant to schedule home visit for Nov 10.'},
       {ch:'mail', when:'Nov 8, 2026', text:'Application received confirmation sent.'},
@@ -93,12 +94,14 @@ const USERS = [
   {n:'Marcus Hope', e:'mhope@intellectstorm.gy', r:'System administrator', org:'IntellectStorm', last:'Today, 7:55 AM', mfa:true},
 ];
 let AUDIT = [
-  {t:'10:02 AM', who:'Kevin Ramnarine', what:'Viewed case PTH-26-0139', ip:'Office · 10.0.4.21'},
-  {t:'9:58 AM', who:'Rochelle Bacchus', what:'Flagged PTH-26-0147 as possible duplicate of PTH-26-0119', ip:'Office · 10.0.4.17'},
-  {t:'9:40 AM', who:'Kevin Ramnarine', what:'Revealed ID number on PTH-26-0124', ip:'Mobile · 190.80.x.x'},
-  {t:'9:15 AM', who:'Rochelle Bacchus', what:'Signed in (two-step verified)', ip:'Office · 10.0.4.17'},
-  {t:'8:41 AM', who:'Natasha Persaud', what:'Exported monthly report (PDF)', ip:'Office · 10.0.4.12'},
-  {t:'7:55 AM', who:'Marcus Hope', what:'Nightly backup verified (encrypted, 30-day retention)', ip:'IntellectStorm DC'},
+  {t:'10:02 AM', who:'Kevin Ramnarine', what:'Viewed case PTH-26-0139', ip:'Office · 10.0.4.21', k:'View'},
+  {t:'9:58 AM', who:'Rochelle Bacchus', what:'Flagged PTH-26-0147 as possible duplicate of PTH-26-0119', ip:'Office · 10.0.4.17', k:'Change'},
+  {t:'9:40 AM', who:'Kevin Ramnarine', what:'Revealed ID number on PTH-26-0124', ip:'Mobile · 190.80.x.x', k:'View'},
+  {t:'9:15 AM', who:'Rochelle Bacchus', what:'Signed in (two-step verified)', ip:'Office · 10.0.4.17', k:'Sign-in'},
+  {t:'8:41 AM', who:'Natasha Persaud', what:'Exported monthly report (PDF)', ip:'Office · 10.0.4.12', k:'Export'},
+  {t:'9:02 AM', who:'Tamika Joseph', what:'Changed status of PTH-26-0131 to Approved', ip:'Office · 10.0.4.19', k:'Change'},
+  {t:'8:30 AM', who:'Andre Fung-A-Fat', what:'Signed in (two-step verified)', ip:'Mobile · 190.80.x.x', k:'Sign-in'},
+  {t:'7:55 AM', who:'Marcus Hope', what:'Nightly backup verified (encrypted, 30-day retention)', ip:'IntellectStorm DC', k:'System'},
 ];
 
 // ---------------- state ----------------
@@ -111,6 +114,7 @@ const S = {
   sel:null, notifOpen:false, reveal:{},
   adminTab:'orgs',
   theme:'dark',
+  q:'', loading:false, offline:!navigator.onLine, driveForm:null, auditF:{who:'All',k:'All',q:''}, org:'all', wizErr:{}, notify:{sms:true,email:false,drives:true},
 };
 const ROLES = {
   public:{label:'Applicant (public)', home:'#home'},
@@ -127,9 +131,15 @@ const badge = st => `<span class="badge ${STATUS[st].cls}">${STATUS[st].label}</
 const typeChips = ts => `<div class="typechips">${ts.map(t=>`<span class="tchip ${TYPES[t].cls}" title="${TYPES[t].name}">${ID(TYPES[t].icon)}</span>`).join('')}</div>`;
 const av = k => { const s=STAFF[k]; return `<span class="avatar" style="background:${s.col}">${s.ini}</span>`; };
 const initials = n => n.split(' ').map(x=>x[0]).slice(0,2).join('');
-const pav = (n,col) => `<span class="avatar" style="background:${col||'#94A3A0'}">${initials(n)}</span>`;
-const PCOL = ['#0E7C6B','#6D5BD0','#E8604C','#2F80C9','#C98309','#1E9E62'];
+const pav = (n,col) => `<span class="avatar" style="background:${col||'#5E6B69'}">${initials(n)}</span>`;
+const PCOL = ['#0E7C6B','#6D5BD0','#C2412D','#2366A8','#9A6206','#157A4B'];
 const colFor = s => PCOL[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%PCOL.length];
+function emptyState(icon,title,text,action){ return `<div class="empty"><span class="empty-ic">${ID(icon)}</span><h3>${title}</h3><p class="muted small">${text}</p>${action||''}</div>`; }
+function matchQ(a){ const q=S.q.trim().toLowerCase(); if(!q) return true; return [a.name,a.id,a.phone,a.region].join(' ').toLowerCase().includes(q); }
+function skeleton(){ return `<div class="ph"><div><span class="sk" style="width:180px;height:12px"></span><span class="sk" style="width:280px;height:30px;margin-top:10px"></span></div></div>
+  <div class="stats">${[1,2,3,4].map(()=>`<div class="stat"><span class="sk" style="width:60%;height:12px"></span><span class="sk" style="width:40%;height:30px;margin-top:16px"></span></div>`).join('')}</div>
+  <div class="card" style="margin-top:16px">${[1,2,3,4,5].map(()=>`<div class="row" style="padding:16px 20px;border-bottom:1px solid var(--line-2)"><span class="sk" style="width:36px;height:36px;border-radius:50%"></span><div style="flex:1"><span class="sk" style="width:30%;height:12px"></span><span class="sk" style="width:20%;height:10px;margin-top:8px"></span></div><span class="sk" style="width:80px;height:22px;border-radius:99px"></span></div>`).join('')}</div>`; }
+function toggle(key,label,sub){ const on=S.notify[key]; return `<div class="row between" style="padding:12px 0;border-bottom:1px solid var(--line-2)"><div><b class="small" style="display:block">${label}</b><span class="tiny muted">${sub}</span></div><button class="switch ${on?'on':''}" role="switch" aria-checked="${on}" aria-label="${label}" data-act="notify" data-v="${key}"><span></span></button></div>`; }
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.innerHTML=I('check')+esc(msg); document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
 function store(){ try{ localStorage.setItem('path-demo-role', S.role); }catch(e){} }
 
@@ -140,9 +150,9 @@ function applyTheme(){ document.documentElement.dataset.theme=S.theme; const m=d
 function demobar(){
   return `<div class="demobar"><div class="inner">
     <span class="tag">PATH · UI MOCKUP</span>
-    <span class="muted" style="color:#9FB1AE">View as:</span>
+    <span class="muted">View as:</span>
     <div class="rolepick">${Object.entries(ROLES).map(([k,r])=>`<button data-role="${k}" class="${S.role===k?'on':''}">${r.label}</button>`).join('')}</div><select class="role-select" data-act="rolesel" aria-label="View as">${Object.entries(ROLES).map(([k,r])=>`<option value="${k}" ${S.role===k?'selected':''}>${r.label}</option>`).join('')}</select>
-    <span class="powered">Hosted by <img src="intellectstorm-logo.png" alt="IntellectStorm"></span>
+    <span class="powered">Hosted by <img src="intellectstorm-logo.png" alt="IntellectStorm" width="420" height="51"></span>
     ${themeBtn()}<a href="#login" class="signout">${I('logout')} Sign out</a>
   </div></div>`;
 }
@@ -158,7 +168,7 @@ function pubHeader(route){
 function pubFooter(){
   return `<footer class="foot"><div class="inner">
     <span>© 2026 PATH · Public Assistance and Triage Hub. Your information is protected and only seen by the staff handling your request.</span>
-    <span>Hosted by <img src="intellectstorm-logo.png" alt="IntellectStorm"></span>
+    <span>Hosted by <img src="intellectstorm-logo.png" alt="IntellectStorm" width="420" height="51"></span>
   </div></footer>
   <nav class="bnav">
     ${[['#home','home','Home'],['#apply','plus','Apply'],['#track','search','Track'],['#drives','cal','Drives']].map(([h,i,l])=>`<a href="${h}" class="${location.hash===h?'on':''}">${I(i)}${l}</a>`).join('')}
@@ -180,24 +190,25 @@ function shell(route, content, title){
   const flat = groups.flatMap(g=>g[1]);
   const isOn = h => route===h || (h==='#cases' && route.startsWith('#case-')) || (h==='#allcases' && route.startsWith('#case-') && S.role!=='caseworker');
   return `<div class="shell">
-    <aside class="side">
+    <aside class="side" aria-label="Main navigation">
       <a href="${ROLES[S.role].home}" class="logo"><span class="logo-mark">${ID('heart')}</span><span>PATH<small>${S.role==='it'?'IntellectStorm console':'Launch NGO workspace'}</small></span></a>
-      ${groups.map(([g,items])=>`<div class="grp">${g}</div>${items.map(([h,i,l,c])=>`<a href="${h}" class="${isOn(h)?'on':''}">${I(i)}${l}${c?`<span class="count">${c}</span>`:''}</a>`).join('')}`).join('')}
+      ${groups.map(([g,items])=>`<div class="grp">${g}</div>${items.map(([h,i,l,c])=>`<a href="${h}" class="${isOn(h)?'on':''}" ${isOn(h)?'aria-current="page"':''}>${I(i)}${l}${c?`<span class="count" aria-label="${c} waiting">${c}</span>`:''}</a>`).join('')}`).join('')}
       <div class="grp">Help</div><a href="#home">${I('globe')}Public portal</a>
       <div class="me">${av(ROLES[S.role].who)}<div><b style="color:#fff;font-size:13px">${who.name}</b><div class="tiny" style="color:#7F9592">${who.role}</div></div></div>
     </aside>
     <div>
       <div class="topbar">
-        <div class="search">${I('search')}<input placeholder="Search by name, reference or phone…" aria-label="Search"></div>
+        <div class="search" role="search">${I('search')}<input id="gsearch" type="search" placeholder="Search by name, reference or phone…" aria-label="Search applications" value="${esc(S.q)}">${S.q?`<button class="clr" data-act="clearq" aria-label="Clear search">${I('x')}</button>`:''}</div>
+        ${S.role==='it'?`<label class="orgpick"><span class="tiny muted hide-mobile">Organisation</span><select class="select" data-act="orgsel" aria-label="Organisation"><option value="all" ${S.org==='all'?'selected':''}>All NGOs</option><option value="launch" ${S.org==='launch'?'selected':''}>Launch NGO</option><option value="p2" ${S.org==='p2'?'selected':''}>Partner NGO 2 (onboarding)</option></select></label>`:''}
         <div style="margin-left:auto;position:relative" class="row">
           <button class="iconbtn" data-act="notif" aria-label="Notifications">${I('bell')}<span class="dot"></span></button>
           ${S.notifOpen?notifPanel():''}
           ${av(ROLES[S.role].who)}
         </div>
       </div>
-      <main class="main">${content}</main>
+      <main class="main" id="main" tabindex="-1">${S.loading?skeleton():content}</main>
     </div>
-    <nav class="bnav">${flat.slice(0,4).map(([h,i,l])=>`<a href="${h}" class="${isOn(h)?'on':''}">${I(i)}${SHORTL[l]||l}</a>`).join('')}</nav>
+    <nav class="bnav" aria-label="Quick navigation">${flat.slice(0,4).map(([h,i,l])=>`<a href="${h}" class="${isOn(h)?'on':''}" ${isOn(h)?'aria-current="page"':''}>${I(i)}${SHORTL[l]||l}</a>`).join('')}</nav>
   </div>`;
 }
 function notifPanel(){
@@ -261,41 +272,87 @@ function driveCard(d){
     <div class="small muted row" style="gap:6px">${I('pin','')}${d.place}</div>
     <div class="row wrap small" style="gap:8px"><span class="badge b-grey">${RSHORT(d.region)}</span><span class="badge b-grey">${I('clock')} ${d.time}</span><span class="badge b-ok">${d.spots}</span></div></div><span class="drive-go">${I('caret')}</span></div>`;
 }
+function driveRowStaff(d,i){
+  const dt=new Date(d.d+'T12:00:00'), m=dt.toLocaleString('en',{month:'short'}), t=TYPES[d.type], pct=Math.round(d.reg/d.cap*100);
+  return `<div class="drive"><div class="date-badge"><div class="m">${m}</div><div class="d">${dt.getDate()}</div></div>
+    <div class="stack" style="gap:6px;flex:1;min-width:0"><div class="row" style="gap:8px"><span class="tchip ${t.cls}">${ID(t.icon)}</span><b>${esc(d.t)}</b></div>
+    <div class="small muted row" style="gap:6px">${I('pin','')}${esc(d.place)} · ${RSHORT(d.region)} · ${esc(d.time)}</div></div>
+    <div class="cap hide-mobile"><div class="row between tiny"><span class="muted">Registered</span><b>${d.reg} / ${d.cap}</b></div><div class="progress" style="margin-top:6px"><span style="width:${pct}%;${pct>=90?'background:var(--t-rose)':''}"></span></div>${pct>=90?'<span class="tiny" style="color:var(--t-rose)">Almost full</span>':`<span class="tiny muted">${d.cap-d.reg} places left</span>`}</div>
+    <button class="btn btn-ghost btn-sm" data-act="editdrive" data-v="${i}">Edit</button></div>`;
+}
+function driveDrawer(){
+  const f=S.driveForm, isNew=f.i==null;
+  return `<div class="scrim" data-act="closedrive"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drv-title">
+    <div class="dh"><div class="row between"><h2 id="drv-title" style="font-size:20px">${isNew?'New assistance drive':'Edit drive'}</h2><button class="iconbtn" data-act="closedrive" aria-label="Close">${I('x')}</button></div><p class="small muted" style="margin-top:4px">Drives appear on the public portal for applicants in that region.</p></div>
+    <div class="db">
+      ${f.err?`<div class="alert alert-flag" role="alert">${I('alert')}<span>${f.err}</span></div>`:''}
+      <div class="field ${f.err&&!f.t.trim()?'has-err':''}"><label for="dv-t">Title</label><input id="dv-t" class="input" data-df="t" value="${esc(f.t)}" placeholder="e.g. School supplies drive" ${f.err&&!f.t.trim()?'aria-invalid="true"':''}></div>
+      <div class="form-grid"><div class="field"><label for="dv-type">Type of help</label><select id="dv-type" class="select" data-df="type">${Object.entries(TYPES).map(([k,t])=>`<option value="${k}" ${f.type===k?'selected':''}>${t.name}</option>`).join('')}</select></div>
+      <div class="field"><label for="dv-r">Region</label><select id="dv-r" class="select" data-df="region">${REGIONS.map(r=>`<option ${f.region===r?'selected':''}>${r}</option>`).join('')}</select></div>
+      <div class="field"><label for="dv-d">Date</label><input id="dv-d" type="date" class="input" data-df="d" value="${f.d}"></div>
+      <div class="field"><label for="dv-time">Time</label><input id="dv-time" class="input" data-df="time" value="${esc(f.time)}" placeholder="9:00 AM – 1:00 PM"></div></div>
+      <div class="field ${f.err&&!f.place.trim()?'has-err':''}"><label for="dv-p">Location</label><input id="dv-p" class="input" data-df="place" value="${esc(f.place)}" placeholder="Venue, village or town" ${f.err&&!f.place.trim()?'aria-invalid="true"':''}></div>
+      <div class="form-grid"><div class="field"><label for="dv-c">Capacity</label><input id="dv-c" type="number" min="1" class="input" data-df="cap" value="${f.cap}"></div>
+      <div class="field"><label for="dv-s">What's offered</label><input id="dv-s" class="input" data-df="spots" value="${esc(f.spots)}" placeholder="e.g. 120 hampers"></div></div>
+      <label class="consent small"><input type="checkbox" checked> Text applicants in this region about the drive</label>
+    </div>
+    <div class="df">${isNew?'':`<button class="btn btn-danger" data-act="deldrive">${I('x')} Cancel drive</button>`}<button class="btn btn-primary" data-act="savedrive">${I('check')} ${isNew?'Publish drive':'Save changes'}</button></div></aside>`;
+}
 function viewDrives(staff){
   const regs = ['All',...new Set(DRIVES.map(d=>RSHORT(d.region)))];
   const list = DRIVES.filter(d=>S.driveFilter==='All'||RSHORT(d.region)===S.driveFilter);
-  const body = `<div class="ph"><div><h1>Assistance drives</h1><p class="muted">Current and upcoming support events, by region.</p></div>${staff?`<button class="btn btn-primary" data-act="toast" data-msg="Drive form opened (mockup)">${I('plus')} New drive</button>`:''}</div>
+  const body = `<div class="ph"><div>${staff?'<p class="eyebrow">Launch NGO</p>':''}<h1>Assistance drives</h1><p class="muted">${staff?'Plan drives, track registrations and publish them to the public portal.':'Current and upcoming support events, by region.'}</p></div>${staff?`<button class="btn btn-primary" data-act="newdrive">${I('plus')} New drive</button>`:''}</div>
+    ${staff?`<div class="stats" style="margin-bottom:16px">${stat('cal','c-edu','Upcoming drives',DRIVES.length,'Next: '+new Date(DRIVES[0].d+'T12:00:00').toLocaleString('en',{month:'short',day:'numeric'}),'',1)}${stat('users','c-fin','Registered',DRIVES.reduce((a,d)=>a+d.reg,0),'Across all regions')}${stat('heart','c-food','Places left',DRIVES.reduce((a,d)=>a+d.cap-d.reg,0),'Total capacity '+DRIVES.reduce((a,d)=>a+d.cap,0))}${stat('check','c-ok','Served last month','212','At 4 drives')}</div>`:''}
     <div class="filters" style="margin-bottom:16px">${regs.map(r=>`<button class="pill ${S.driveFilter===r?'on':''}" data-act="drivefilter" data-v="${r}">${r}</button>`).join('')}</div>
-    <div class="drives">${list.map(driveCard).join('')||'<p class="muted">No drives in this region yet.</p>'}</div>`;
+    <div class="drives">${list.length? list.map(d=>staff?driveRowStaff(d,DRIVES.indexOf(d)):driveCard(d)).join('') : emptyState('cal','No drives in this region yet',staff?'Create one and it will appear on the public portal.':'Check back soon, or ask for help online at any time.',staff?`<button class="btn btn-primary btn-sm" data-act="newdrive">${I('plus')} New drive</button>`:`<a href="#apply" class="btn btn-ghost btn-sm">Apply for help</a>`)}</div>
+    ${staff&&S.driveForm?driveDrawer():''}`;
   return staff ? body : `${pubHeader('#drives')}<div class="page">${body}</div>${pubFooter()}`;
 }
 
 // apply wizard
 const WSTEPS = ['Type of help','About you','Your situation','Review & send'];
+function fld(key,label,ph,hint,mode){
+  const d=S.wiz.data, err=S.wizErr[key];
+  return `<div class="field ${err?'has-err':''}"><label for="f-${key}">${label}</label><input id="f-${key}" class="input" data-f="${key}" value="${esc(d[key]||'')}" placeholder="${ph}" ${mode?`inputmode="${mode}"`:''} ${err?`aria-invalid="true" aria-describedby="e-${key}"`:''} autocomplete="${{first:'given-name',last:'family-name',phone:'tel',email:'email',address:'street-address'}[key]||'off'}">
+    ${err?`<span class="err" id="e-${key}">${I('alert')} ${err}</span>`:hint?`<span class="hint">${hint}</span>`:''}</div>`;
+}
+function validateAbout(){
+  const d=S.wiz.data, e={};
+  if(!d.first.trim()) e.first='Enter your first name.';
+  if(!d.last.trim()) e.last='Enter your last name.';
+  if(!/^\d{9}$/.test(d.idno.replace(/\s/g,''))) e.idno='ID number must be exactly 9 digits.';
+  const ph=d.phone.replace(/[\s-]/g,'');
+  if(!/^(\+?592)?6\d{6}$/.test(ph)) e.phone='Enter a Guyana mobile number, e.g. +592 612 3456.';
+  if(d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) e.email='Check the email address — it should look like name@example.com.';
+  if(!d.address.trim()) e.address='Enter your home address so we can reach you.';
+  S.wizErr=e; return !Object.keys(e).length;
+}
 function viewApply(){
   const w = S.wiz; const st = w.step;
   let body='';
   if(st===0){
     body = `<h2>What help do you need?</h2><p class="muted" style="margin:6px 0 18px">Choose all that apply — one application covers everything.</p>
-    <div class="choice-grid">${Object.entries(TYPES).map(([k,t])=>`<button class="choice ${w.types.includes(k)?'on':''}" data-act="toggletype" data-v="${k}">
+    <div class="choice-grid">${Object.entries(TYPES).map(([k,t])=>`<button class="choice ${w.types.includes(k)?'on':''}" data-act="toggletype" data-v="${k}" aria-pressed="${w.types.includes(k)}">
       <span class="ic tile-ic ${t.cls}" style="width:46px;height:46px;border-radius:14px;display:grid;place-items:center;flex:none">${ID(t.icon)}</span>
       <span><b style="display:block;font-size:16px">${t.name}</b><span class="muted small">${t.desc}</span></span><span class="check">${I('check')}</span></button>`).join('')}</div>`;
   } else if(st===1){
     const d=w.data;
-    body = `<h2>About you</h2><p class="muted" style="margin:6px 0 18px">We use this to contact you and to make sure each person gets help fairly.</p>
+    const nErr=Object.keys(S.wizErr).length;
+    body = `<h2>About you</h2><p class="muted" style="margin:6px 0 18px">We use this to contact you and to make sure each person gets help fairly. <button class="link" style="font-size:13px" data-act="fillme">Fill with sample details</button></p>
+    ${nErr?`<div class="alert alert-flag" role="alert" style="margin-bottom:16px">${I('alert')}<div><b>Please fix ${nErr} ${nErr>1?'things':'thing'} before continuing.</b><div class="small">The fields marked below need your attention.</div></div></div>`:''}
     <div class="form-grid">
-      <div class="field"><label>First name</label><input class="input" data-f="first" value="${esc(d.first)}" placeholder="e.g. Shanice"></div>
-      <div class="field"><label>Last name</label><input class="input" data-f="last" value="${esc(d.last)}" placeholder="e.g. Williams"></div>
-      <div class="field"><label>National ID number</label><input class="input" data-f="idno" value="${esc(d.idno)}" placeholder="9-digit ID number"><span class="hint row" style="gap:6px">${I('lock','')} Encrypted. Only the staff handling your request can see it.</span></div>
-      <div class="field"><label>Mobile number</label><input class="input" data-f="phone" value="${esc(d.phone)}" placeholder="+592 6xx xxxx"><span class="hint">We'll text you updates here.</span></div>
-      <div class="field"><label>Email <span class="muted">(optional)</span></label><input class="input" data-f="email" value="${esc(d.email)}" placeholder="name@example.com"></div>
-      <div class="field"><label>Region</label><select class="select" data-f="region">${REGIONS.map(r=>`<option ${d.region===r?'selected':''}>${r}</option>`).join('')}</select></div>
-      <div class="field full"><label>Home address</label><input class="input" data-f="address" value="${esc(d.address)}" placeholder="Lot, street, village or ward"></div>
+      ${fld('first','First name','e.g. Shanice')}
+      ${fld('last','Last name','e.g. Williams')}
+      ${fld('idno','National ID number','9-digit ID number',`${I('lock','')} Encrypted. Only the staff handling your request can see it.`,'numeric')}
+      ${fld('phone','Mobile number','+592 6xx xxxx',"We'll text you updates here.",'tel')}
+      ${fld('email','Email <span class="muted">(optional)</span>','name@example.com','','email')}
+      <div class="field"><label for="f-region">Region</label><select id="f-region" class="select" data-f="region">${REGIONS.map(r=>`<option ${d.region===r?'selected':''}>${r}</option>`).join('')}</select></div>
+      <div class="full">${fld('address','Home address','Lot, street, village or ward')}</div>
     </div>`;
   } else if(st===2){
     body = `<h2>Your situation</h2><p class="muted" style="margin:6px 0 18px">A few questions for each type of help you chose.</p>
     <div class="stack" style="gap:18px">
-      <div class="field"><label>How many people live in your household?</label><div class="filters">${['1','2','3','4','5','6+'].map(n=>`<button class="pill ${w.data.house===n?'on':''}" data-act="house" data-v="${n}">${n}</button>`).join('')}</div></div>
+      <div class="field"><label>How many people live in your household?</label><div class="filters">${['1','2','3','4','5','6+'].map(n=>`<button class="pill ${w.data.house===n?'on':''}" data-act="house" data-v="${n}" aria-pressed="${w.data.house===n}">${n}</button>`).join('')}</div></div>
       ${w.types.map(t=>`<div class="card card-pad" style="box-shadow:none"><div class="row" style="margin-bottom:12px"><span class="tchip ${TYPES[t].cls}">${ID(TYPES[t].icon)}</span><b>${TYPES[t].name}</b></div>${typeQs(t)}</div>`).join('')}
       <div class="upload">${I('upload','')}<div style="margin-top:6px"><b>Add supporting documents</b> <span class="muted">(optional)</span></div><p class="muted small">Photo of ID, school letter, fire report, bills — JPG, PNG or PDF up to 10 MB.</p><button class="btn btn-soft btn-sm" style="margin-top:10px" data-act="toast" data-msg="2 files attached (mockup)">${I('plus')} Choose files</button></div>
     </div>`;
@@ -330,7 +387,7 @@ function viewSuccess(){
   return `${pubHeader('')}<div class="page"><div class="success card card-pad" style="padding:38px">
     <div class="big">${I('check')}</div><h1 style="font-size:28px">Application sent!</h1>
     <p class="muted" style="margin-top:8px">Thank you. Our team will review your request and a caseworker will contact you.</p>
-    <div class="refbox">${ref} <button class="iconbtn" data-act="toast" data-msg="Reference copied">${I('copy')}</button></div>
+    <div class="refbox">${ref} <button class="iconbtn" data-act="toast" data-msg="Reference copied" aria-label="Copy reference number">${I('copy')}</button></div>
     <p class="small muted">Keep this reference number to track your request.</p>
     <div style="display:flex;justify-content:center;margin:22px 0"><div class="sms"><b class="tiny muted" style="display:block;margin-bottom:4px">Text message · now</b>PATH: We received your application ${ref}. We'll text you when it is reviewed. Track it at path.gy/track</div></div>
     <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><a class="btn btn-primary" href="#track" data-act="trackref" data-v="${ref}">${I('search')} Track this request</a><a class="btn btn-ghost" href="#home">Back to home</a></div>
@@ -350,14 +407,18 @@ function viewTrack(){
       <div class="row wrap" style="margin:12px 0 22px">${a.types.map(t=>`<span class="badge ${TYPES[t].cls}">${ID(TYPES[t].icon)} ${TYPES[t].name}</span>`).join('')}<span class="badge b-grey">Sent ${a.date}</span></div>
       ${a.status==='docs'?`<div class="alert alert-warn" style="margin-bottom:18px">${I('upload')}<div><b>Action needed:</b> please upload a recent utility bill as proof of address.<div style="margin-top:8px"><button class="btn btn-sm btn-accent" data-act="toast" data-msg="Document uploaded — thank you!">${I('upload')} Upload now</button></div></div></div>`:''}
       <div class="tl">${steps.map((s,i)=>`<div class="tl-item ${i<idx||(i===idx&&['approved','rejected'].includes(a.status))?'done':i===idx?'now':''}"><span class="tdot">${i<idx||(i===idx&&['approved','rejected'].includes(a.status))?I('check'):i===idx?I('clock'):''}</span><h4>${s[0]}</h4><p class="small muted">${s[1]}</p></div>`).join('')}</div>
-      <div class="row wrap" style="gap:10px;border-top:1px solid var(--line);padding-top:16px"><span class="small muted">${I('bell','')} Updates go to your phone ending ••12</span><button class="btn btn-sm btn-ghost" style="margin-left:auto" data-act="toast" data-msg="Message sent to your caseworker">${I('msg')} Message my caseworker</button></div>
+      <div class="row wrap" style="gap:10px;border-top:1px solid var(--line);padding-top:16px"><span class="small muted row" style="gap:6px">${I('bell','')} Updates go to your phone ending ••12</span><button class="btn btn-sm btn-ghost" style="margin-left:auto" data-act="toast" data-msg="Message sent to your caseworker">${I('msg')} Message my caseworker</button></div>
     </div>`;
   }
   return `${pubHeader('#track')}<div class="page" style="max-width:760px">
     <h1 style="font-size:30px">Track my request</h1><p class="muted" style="margin:6px 0 18px">Enter the reference number from your text message or email.</p>
-    <div class="card card-pad"><div class="row wrap"><input class="input" id="trackin" style="flex:1;min-width:200px" placeholder="e.g. PTH-26-0139" value="${esc(ref)}"><button class="btn btn-primary" data-act="track">${I('search')} Find</button></div>
+    <div class="card card-pad"><div class="row wrap"><input class="input" id="trackin" aria-label="Reference number" style="flex:1;min-width:200px" placeholder="e.g. PTH-26-0139" value="${esc(ref)}"><button class="btn btn-primary" data-act="track">${I('search')} Find</button></div>
     <div class="tiny muted" style="margin-top:10px">Try: <a href="#" data-act="demo-ref" data-v="PTH-26-0139" style="color:var(--brand);font-weight:700">PTH-26-0139</a> · <a href="#" data-act="demo-ref" data-v="PTH-26-0144" style="color:var(--brand);font-weight:700">PTH-26-0144</a> · <a href="#" data-act="demo-ref" data-v="PTH-26-0131" style="color:var(--brand);font-weight:700">PTH-26-0131</a></div></div>
-    ${res}</div>${pubFooter()}`;
+    ${res}
+    ${a?`<div class="card card-pad" style="margin-top:16px"><div class="row between"><div><h3>How we contact you</h3><p class="small muted">Choose how you get updates about this request.</p></div>${I('bell')}</div>
+      <div style="margin-top:8px">${toggle('sms','Text messages (SMS)','Sent to +592 6•• ••12 · free to receive')}${toggle('email','Email','Sent to sha•••@gmail.com')}${toggle('drives','Assistance drives near me','A text when a drive is planned in Region 4')}</div>
+      <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-primary btn-sm" data-act="toast" data-msg="Contact preferences saved">${I('check')} Save preferences</button></div></div>`:''}
+    </div>${pubFooter()}`;
 }
 
 // ---------------- STAFF SCREENS ----------------
@@ -386,10 +447,12 @@ function viewDashboard(){
       </div>
     </div>`);
 }
-function appTable(list, compact){
-  if(!list.length) return `<div class="card-pad muted">Nothing here — nice work!</div>`;
-  return `<div style="overflow:auto"><table class="table"><thead><tr><th>Applicant</th><th>Help</th><th class="hide-sm">Received</th>${compact?'':'<th class="hide-sm">Channel</th>'}<th>Status</th><th class="hide-sm">Flags</th></tr></thead><tbody>
-  ${list.map(a=>`<tr data-act="open" data-v="${a.id}" class="${S.sel===a.id?'sel':''}"><td><div class="who">${pav(a.name,colFor(a.name))}<div><b>${a.name}</b><span class="tiny muted">${a.id} · ${RSHORT(a.region)}</span></div></div></td>
+function appTable(list, compact, emptyMsg){
+  list = list.filter(matchQ);
+  if(!list.length) return S.q ? emptyState('search',`No results for “${esc(S.q)}”`,'Try a name, a reference like PTH-26-0139, or the last digits of a phone number.',`<button class="btn btn-ghost btn-sm" data-act="clearq">${I('x')} Clear search</button>`)
+    : emptyState('check', emptyMsg?emptyMsg[0]:'All caught up', emptyMsg?emptyMsg[1]:'There is nothing waiting here right now.');
+  return `<div style="overflow:auto"><table class="table"><thead><tr><th scope="col">Applicant</th><th scope="col">Help</th><th scope="col" class="hide-sm">Received</th>${compact?'':'<th scope="col" class="hide-sm">Channel</th>'}<th scope="col">Status</th><th scope="col" class="hide-sm">Flags</th></tr></thead><tbody>
+  ${list.map(a=>`<tr data-act="open" data-v="${a.id}" tabindex="0" aria-label="Open application from ${a.name}" class="${S.sel===a.id?'sel':''}"><td><div class="who">${pav(a.name,colFor(a.name))}<div><b>${a.name}</b><span class="tiny muted">${a.id} · ${RSHORT(a.region)}</span></div></div></td>
   <td class="t-help">${typeChips(a.types)}</td><td class="hide-sm small">${a.date}</td>${compact?'':`<td class="hide-sm"><span class="badge b-grey">${I(a.ch==='Online'?'globe':a.ch==='Phone'?'phone':'walk')} ${a.ch}</span></td>`}<td class="t-status">${badge(a.status)}</td>
   <td class="hide-sm">${a.flags.includes('dup')?`<span class="badge b-flag">${I('copy')} Possible duplicate</span>`:''}${a.flags.includes('incomplete')?`<span class="badge b-warn">${I('alert')} Incomplete</span>`:''}${a.flags.length?'':'<span class="muted tiny">—</span>'}</td></tr>`).join('')}
   </tbody></table></div>`;
@@ -402,17 +465,17 @@ function viewScreening(){
   if(S.queueTab==='docs') list=list.filter(a=>a.status==='docs');
   return shell('#screening', `
     <div class="ph"><div><h1>Screening queue</h1><p class="muted">Check each application, then assign it to a caseworker. You decide the priority — PATH only flags issues.</p></div><a href="#intake" class="btn btn-primary">${I('plus')} Log walk-in / phone request</a></div>
-    <div class="row between wrap" style="margin-bottom:14px"><div class="tabs">${tabs.map(([k,l])=>`<button class="${S.queueTab===k?'on':''}" data-act="qtab" data-v="${k}">${l}</button>`).join('')}</div>
+    <div class="row between wrap" style="margin-bottom:14px"><div class="tabs">${tabs.map(([k,l])=>`<button class="${S.queueTab===k?'on':''}" data-act="qtab" data-v="${k}" aria-pressed="${S.queueTab===k}">${l}</button>`).join('')}</div>
     <div class="filters"><span class="pill">${I('pin','')} All regions</span><span class="pill">All types</span></div></div>
-    <div class="card">${appTable(list,false)}</div>
+    <div class="card">${appTable(list,false,{all:['Queue is clear','Every application has been screened. New ones will appear here.'],new:['No new applications','New online, phone and walk-in requests will appear here.'],flag:['Nothing flagged','No possible duplicates or incomplete applications.'],docs:['No documents outstanding','Nobody is waiting to send you documents.']}[S.queueTab])}</div>
     ${S.sel?drawer(S.sel):''}`);
 }
 function drawer(id){
   const a=APPS.find(x=>x.id===id); if(!a) return '';
   const dup = a.dupOf && APPS.find(x=>x.id===a.dupOf);
-  return `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-label="Application ${a.id}">
+  return `<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
     <div class="dh"><div class="row between"><span class="tiny muted">${a.id} · received ${a.date} via ${a.ch.toLowerCase()}</span><button class="iconbtn" data-act="close" aria-label="Close">${I('x')}</button></div>
-      <div class="row" style="margin-top:8px">${pav(a.name,colFor(a.name))}<div><h2 style="font-size:20px">${a.name}</h2><div class="small muted">${a.region}</div></div><span style="margin-left:auto">${badge(a.status)}</span></div></div>
+      <div class="row" style="margin-top:8px">${pav(a.name,colFor(a.name))}<div><h2 id="dlg-title" style="font-size:20px">${a.name}</h2><div class="small muted">${a.region}</div></div><span style="margin-left:auto">${badge(a.status)}</span></div></div>
     <div class="db">
       ${dup?`<div class="alert alert-flag">${I('copy')}<div><b>Possible duplicate.</b> Same ID number and phone as <b>${dup.id}</b> (${STATUS[dup.status].label.toLowerCase()}, ${dup.date}).
         <div class="compare"><div><b>This application</b><br>House fire relief + financial aid<br>New Amsterdam</div><div><b>${dup.id}</b><br>Emergency housing<br>Approved by Andre F.</div></div></div></div>`:''}
@@ -421,7 +484,7 @@ function drawer(id){
         <dt>ID number</dt><dd class="mask">${a.idno} <span class="badge b-grey">${I('lock')} Hidden</span></dd><dt>Mobile</dt><dd>${a.phone}</dd><dt>Household</dt><dd>${a.kids+1} people (${a.kids} children)</dd><dt>Help requested</dt><dd>${a.types.map(t=>TYPES[t].name).join(', ')}</dd><dt>Documents</dt><dd>${a.flags.includes('incomplete')?'1 of 2 uploaded':'2 files uploaded'}</dd></dl></div>
       <div class="card card-pad" style="box-shadow:none"><h3 style="margin-bottom:10px">Assign to caseworker</h3>
         <div class="row wrap">${['cw1','cw2','cw3'].map((k,i)=>`<button class="choice ${a.cw===k?'on':''}" style="padding:10px 12px;flex:1;min-width:150px;align-items:center" data-act="assign" data-v="${k}">${av(k)}<span><b class="small" style="display:block">${STAFF[k].name}</b><span class="tiny muted">${[18,14,9][i]} open cases</span></span></button>`).join('')}</div></div>
-      <div class="field"><label>Screening note</label><textarea class="textarea" placeholder="Add a note for the caseworker…"></textarea></div>
+      <div class="field"><label for="snote">Screening note</label><textarea id="snote" class="textarea" placeholder="Add a note for the caseworker…"></textarea></div>
     </div>
     <div class="df"><button class="btn btn-primary" data-act="approve-assign">${I('check')} Accept &amp; assign</button><button class="btn btn-ghost" data-act="request-docs">${I('msg')} Request documents</button><button class="btn btn-danger" data-act="reject">${I('x')} Not eligible</button></div>
   </aside>`;
@@ -441,17 +504,17 @@ function viewIntake(){
     <div class="alert alert-warn">${I('lock')}<div><b>Consent</b><br><span class="small">Read the privacy notice to the applicant and confirm they agree before saving.</span><label class="row small" style="margin-top:8px"><input type="checkbox" checked style="accent-color:var(--brand)"> Applicant agreed verbally</label></div></div></div></div>`);
 }
 function viewCases(){
-  const mine = APPS.filter(a=>a.cw==='cw1');
+  const mineAll = APPS.filter(a=>a.cw==='cw1'); const mine = mineAll.filter(matchQ);
   return shell('#cases', `
-    <div class="ph"><div><h1>My cases</h1><p class="muted">You only see cases assigned to you.</p></div><div class="tabs"><button class="on">Open (${mine.length})</button><button>Due this week</button><button>Closed</button></div></div>
-    <div class="stats" style="margin-bottom:18px">${stat('folder','c-edu','Open cases',mine.length,'2 need a visit','',1)}${stat('repeat','c-food','Recurring support','2','Next payment Jan 6')}${stat('msg','c-fin','Unread replies','1','From Sharon Bovell')}${stat('check','c-ok','Closed this month','6','▲ 2 vs Oct','var(--ok)')}</div>
-    <div class="case-list">${mine.map(a=>`<a href="#case-${a.id}" class="card case-card">${pav(a.name,colFor(a.name))}<div><div class="row wrap" style="gap:8px"><b>${a.name}</b>${badge(a.status)}</div><div class="small muted">${a.id} · ${RSHORT(a.region)} · assigned ${a.date}</div></div><div class="row">${typeChips(a.types)}<span class="muted">${I('right','')}</span></div></a>`).join('')}</div>`);
+    <div class="ph"><div><h1>My cases</h1><p class="muted">You only see cases assigned to you.</p></div><div class="tabs"><button class="on">Open (${mineAll.length})</button><button>Due this week</button><button>Closed</button></div></div>
+    <div class="stats" style="margin-bottom:18px">${stat('folder','c-edu','Open cases',mineAll.length,'2 need a visit','',1)}${stat('repeat','c-food','Recurring support','2','Next payment Jan 6')}${stat('msg','c-fin','Unread replies','1','From Sharon Bovell')}${stat('check','c-ok','Closed this month','6','▲ 2 vs Oct','var(--ok)')}</div>
+    <div class="case-list">${mine.length?'':`<div class="card">${emptyState('search',`No cases match “${esc(S.q)}”`,'Search by applicant name, reference or phone.',`<button class="btn btn-ghost btn-sm" data-act="clearq">${I('x')} Clear search</button>`)}</div>`}${mine.map(a=>`<a href="#case-${a.id}" class="card case-card">${pav(a.name,colFor(a.name))}<div><div class="row wrap" style="gap:8px"><b>${a.name}</b>${badge(a.status)}</div><div class="small muted">${a.id} · ${RSHORT(a.region)} · assigned ${a.date}</div></div><div class="row">${typeChips(a.types)}<span class="muted">${I('right','')}</span></div></a>`).join('')}</div>`);
 }
 function viewAllCases(){
-  const list = APPS.filter(a=>!['new','screening','docs'].includes(a.status));
+  const list = APPS.filter(a=>!['new','screening','docs'].includes(a.status)).filter(matchQ);
   return shell('#allcases', `<div class="ph"><div><h1>All cases</h1><p class="muted">Every request after screening, with who is handling it.</p></div><button class="btn btn-ghost" data-act="toast" data-msg="CSV export started">${I('download')} Export</button></div>
-  <div class="card"><div style="overflow:auto"><table class="table"><thead><tr><th>Applicant</th><th>Help</th><th>Caseworker</th><th class="hide-sm">Opened</th><th>Status</th></tr></thead><tbody>
-  ${list.map(a=>`<tr onclick="location.hash='#case-${a.id}'"><td><div class="who">${pav(a.name,colFor(a.name))}<div><b>${a.name}</b><span class="tiny muted">${a.id}</span></div></div></td><td>${typeChips(a.types)}</td><td><div class="row small">${a.cw?av(a.cw)+STAFF[a.cw].name:'—'}</div></td><td class="hide-sm small">${a.date}</td><td>${badge(a.status)}</td></tr>`).join('')}
+  <div class="card"><div style="overflow:auto"><table class="table"><thead><tr><th scope="col">Applicant</th><th scope="col">Help</th><th scope="col">Caseworker</th><th scope="col" class="hide-sm">Opened</th><th scope="col">Status</th></tr></thead><tbody>
+  ${list.length?'':`<tr><td colspan="5">${emptyState('search',`No cases match “${esc(S.q)}”`,'Try another name or reference.',`<button class="btn btn-ghost btn-sm" data-act="clearq">${I('x')} Clear search</button>`)}</td></tr>`}${list.map(a=>`<tr tabindex="0" data-href="#case-${a.id}"><td><div class="who">${pav(a.name,colFor(a.name))}<div><b>${a.name}</b><span class="tiny muted">${a.id}</span></div></div></td><td>${typeChips(a.types)}</td><td><div class="row small">${a.cw?av(a.cw)+STAFF[a.cw].name:'—'}</div></td><td class="hide-sm small">${a.date}</td><td>${badge(a.status)}</td></tr>`).join('')}
   </tbody></table></div></div>`);
 }
 function viewCase(id){
@@ -463,16 +526,16 @@ function viewCase(id){
   return shell('#case-'+id, `
     <a href="${back}" class="small muted row" style="gap:6px;margin-bottom:10px">${I('left','')} Back to cases</a>
     <div class="ph"><div class="row">${pav(a.name,colFor(a.name))}<div><h1>${a.name}</h1><p class="muted small">${a.id} · ${a.region} · via ${a.ch.toLowerCase()} on ${a.date}</p></div></div>
-      <div class="row wrap"><select class="select" style="width:auto" data-act="setstatus">${['assigned','progress','approved','rejected','closed'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${STATUS[s].label}</option>`).join('')}</select><button class="btn btn-primary" data-act="toast" data-msg="Status saved · applicant notified by SMS">${I('check')} Update status</button></div></div>
+      <div class="row wrap"><select class="select" style="width:auto" data-act="setstatus" aria-label="Case status">${['assigned','progress','approved','rejected','closed'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${STATUS[s].label}</option>`).join('')}</select><button class="btn btn-primary" data-act="toast" data-msg="Status saved · applicant notified by SMS">${I('check')} Update status</button></div></div>
     <div class="card card-pad" style="margin-bottom:18px"><div class="stepper">${stages.map((s,i)=>`<div class="s ${i<st?'done':i===st?'now':''}"><i></i>${s}</div>`).join('')}</div></div>
     <div class="case-grid">
       <div class="stack" style="gap:18px">
         <div class="card card-pad"><h3 style="margin-bottom:8px">Summary</h3><p>${c.summary}</p><div class="row wrap" style="margin-top:12px">${a.types.map(t=>`<span class="badge ${TYPES[t].cls}">${ID(TYPES[t].icon)} ${TYPES[t].name}</span>`).join('')}</div></div>
         <div class="card card-pad"><div class="row between"><h3>Case notes</h3><span class="tiny muted">${c.notes.length} notes</span></div>
-          <div class="row" style="margin:14px 0 6px;align-items:flex-start">${av(ROLES[S.role].who)}<div style="flex:1"><textarea class="textarea" id="notein" placeholder="Add a note — visible to staff only" style="min-height:70px"></textarea><div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn btn-sm btn-primary" data-act="addnote" data-v="${id}">${I('plus')} Add note</button></div></div></div>
+          <div class="row" style="margin:14px 0 6px;align-items:flex-start">${av(ROLES[S.role].who)}<div style="flex:1"><label for="notein" class="sr-only">New case note</label><textarea class="textarea" id="notein" placeholder="Add a note — visible to staff only" style="min-height:70px"></textarea><div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn btn-sm btn-primary" data-act="addnote" data-v="${id}">${I('plus')} Add note</button></div></div></div>
           ${c.notes.map(n=>`<div class="note">${av(n.by)}<div><b class="small">${STAFF[n.by].name}</b> <span class="meta">· ${n.when}</span><p class="small" style="margin-top:4px">${esc(n.text)}</p></div></div>`).join('')}</div>
         <div class="card card-pad"><div class="row between"><h3>Communication log</h3><button class="btn btn-sm btn-soft" data-act="toast" data-msg="SMS sent to applicant">${I('msg')} Send SMS</button></div>
-          ${c.comms.map(m=>`<div class="note"><span class="tchip ${m.ch==='sms'?'c-fin':m.ch==='phone'?'c-food':'c-edu'}">${I(m.ch==='sms'?'msg':m.ch)}</span><div><span class="meta">${m.ch.toUpperCase()} · ${m.when}</span><p class="small">${esc(m.text)}</p></div></div>`).join('')}</div>
+          ${c.comms.map((m,ci)=>`<div class="note"><span class="tchip ${m.failed?'c-house':m.ch==='sms'?'c-fin':m.ch==='phone'?'c-food':'c-edu'}">${I(m.failed?'alert':m.ch==='sms'?'msg':m.ch)}</span><div style="flex:1"><span class="meta">${m.ch.toUpperCase()} · ${m.when}${m.failed?' · <b style="color:var(--t-rose)">Not delivered</b>':''}</span><p class="small">${esc(m.text)}</p>${m.failed?`<div class="row" style="margin-top:8px;gap:8px"><span class="tiny muted">The phone was switched off or out of coverage.</span><button class="btn btn-sm btn-ghost" data-act="resend" data-v="${id}|${ci}">${I('refresh')} Retry</button></div>`:''}</div></div>`).join('')}</div>
       </div>
       <div class="stack" style="gap:18px">
         <div class="card card-pad"><h3 style="margin-bottom:12px">Applicant</h3><dl class="kv" style="grid-template-columns:100px 1fr">
@@ -482,7 +545,7 @@ function viewCase(id){
         ${c.recurring?`<div class="card card-pad recur"><div class="row" style="margin-bottom:6px"><span class="tchip" style="background:rgba(255,255,255,.18);color:#fff">${I('repeat')}</span><h3>Recurring support</h3></div><p class="small muted">${c.recurring.label}</p>
           ${c.recurring.terms.map(t=>`<div class="term"><span class="small" style="font-weight:600">${t.t}</span><span class="small">${t.amt}</span>${t.st==='paid'?'<span class="badge b-ok">Paid</span>':t.st==='scheduled'?'<span class="badge b-new">Scheduled</span>':'<span class="badge b-grey">Pending</span>'}</div>`).join('')}
           <button class="btn btn-sm btn-ghost" style="margin-top:12px;width:100%" data-act="toast" data-msg="Term added to schedule">${I('plus')} Add term</button></div>`:''}
-        <div class="card card-pad"><h3 style="margin-bottom:10px">Documents</h3>${['National ID (front).jpg','Supporting letter.pdf'].map(f=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line-2)"><span class="tchip c-fin">${I('file')}</span><span class="small" style="flex:1">${f}</span><button class="iconbtn" aria-label="Download">${I('download')}</button></div>`).join('')}</div>
+        <div class="card card-pad"><h3 style="margin-bottom:10px">Documents</h3>${['National ID (front).jpg','Supporting letter.pdf'].map(f=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line-2)"><span class="tchip c-fin">${I('file')}</span><span class="small" style="flex:1">${f}</span><button class="iconbtn" aria-label="Download ${f}" data-act="toast" data-msg="Download started (mockup)">${I('download')}</button></div>`).join('')}</div>
       </div>
     </div>`);
 }
@@ -500,8 +563,8 @@ function viewReports(){
         ${[0,25,50,75,100].map(v=>`<line x1="34" x2="510" y1="${200-v*1.8}" y2="${200-v*1.8}" stroke="var(--line-2)"/><text x="26" y="${204-v*1.8}" text-anchor="end" font-size="11" fill="var(--ink-3)">${v}</text>`).join('')}
         ${months.map(([m,v],i)=>`<rect x="${52+i*78}" y="${200-v*1.8}" width="46" height="${v*1.8}" rx="8" fill="${i===5?'url(#gb)':'url(#gb2)'}"/><text x="${75+i*78}" y="${192-v*1.8}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${v}</text><text x="${75+i*78}" y="220" text-anchor="middle" font-size="12" fill="var(--ink-3)">${m}</text>`).join('')}
       </svg></div>
-      <div class="card card-pad"><h3>By type of help</h3><div class="donut-wrap" style="margin-top:12px">${donut([['Food',152,'#F2A93B'],['Education',104,'#6D5BD0'],['Financial',87,'#2F80C9'],['Housing',53,'#E8604C']])}
-        <div class="legend">${[['Food',152,'#F2A93B'],['Education',104,'#6D5BD0'],['Financial',87,'#2F80C9'],['Housing',53,'#E8604C']].map(([l,v,c])=>`<span><i style="background:${c}"></i>${l} · <b>${v}</b></span>`).join('')}</div></div></div>
+      <div class="card card-pad"><h3>By type of help</h3><div class="donut-wrap" style="margin-top:12px">${donut([['Food',152,'#F2A93B'],['Education',104,'#6D5BD0'],['Financial',87,'#2366A8'],['Housing',53,'#C2412D']])}
+        <div class="legend">${[['Food',152,'#F2A93B'],['Education',104,'#6D5BD0'],['Financial',87,'#2366A8'],['Housing',53,'#C2412D']].map(([l,v,c])=>`<span><i style="background:${c}"></i>${l} · <b>${v}</b></span>`).join('')}</div></div></div>
     </div>
     <div class="case-grid" style="margin-top:18px;grid-template-columns:1fr 1fr">
       <div class="card card-pad"><h3 style="margin-bottom:14px">By region</h3><div class="bars">${[['Region 4',168],['Region 6',71],['Region 3',58],['Region 10',49],['Region 2',30],['Region 5',20]].map(([r,v])=>`<div class="bar"><span>${r}</span><div class="track"><span style="width:${v/168*100}%;background:linear-gradient(90deg,#22D3EE,#6366F1);color:#3B82F6"></span></div><b>${v}</b></div>`).join('')}</div></div>
@@ -515,28 +578,37 @@ function viewAdmin(tab){
   if(tab==='orgs') body = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
       <div class="card card-pad"><div class="row between"><span class="tchip c-fin" style="width:44px;height:44px">${I('heart')}</span><span class="badge b-ok">${I('check')} Live</span></div><h3 style="margin-top:12px">Launch NGO</h3><p class="small muted">Georgetown · food, education, financial aid, emergency housing</p>
         <dl class="kv small" style="margin-top:12px;grid-template-columns:110px 1fr"><dt>Staff accounts</dt><dd>25</dd><dt>Open cases</dt><dd>41</dd><dt>Data location</dt><dd>IntellectStorm DC, Georgetown</dd><dt>Data agreement</dt><dd>Signed Jan 2027</dd></dl></div>
+      <div class="card card-pad"><div class="row between"><span class="tchip c-edu" style="width:44px;height:44px">${ID('building')}</span><span class="badge b-screen">Onboarding · phase 2</span></div><h3 style="margin-top:12px">Partner NGO 2</h3><p class="small muted">Berbice · preview of how a second NGO is added to PATH</p>
+        <div class="checklist" style="margin-top:12px">${[['Data processing agreement signed',1],['Organisation workspace created',1],['Staff accounts invited (4 of 12)',0],['Branding and contact details',0],['Training and go-live',0]].map(([t,ok])=>`<div class="row small" style="padding:6px 0"><span class="ck ${ok?'ok':''}">${ok?I('check'):''}</span>${t}</div>`).join('')}</div>
+        <div class="progress" style="margin-top:10px"><span style="width:40%"></span></div><span class="tiny muted">2 of 5 steps done</span></div>
       <div class="card card-pad" style="border-style:dashed;box-shadow:none;background:var(--surface-2)"><span class="tchip c-edu" style="width:44px;height:44px">${I('plus')}</span><h3 style="margin-top:12px">Add another NGO</h3><p class="small muted">PATH is built so IntellectStorm can host more NGOs, each with its own staff, data and branding.</p><span class="badge b-grey" style="margin-top:12px">Planned for a later phase</span></div></div>`;
   if(tab==='users') body = `<div class="row between wrap" style="margin-bottom:12px"><div class="tabs"><button class="on">All (${USERS.length})</button><button>Launch NGO</button><button>IntellectStorm</button></div><button class="btn btn-primary btn-sm" data-act="toast" data-msg="Invitation sent">${I('plus')} Invite user</button></div>
-    <div class="card"><div style="overflow:auto"><table class="table"><thead><tr><th>User</th><th>Role</th><th class="hide-sm">Organisation</th><th class="hide-sm">Last active</th><th>Two-step login</th></tr></thead><tbody>
+    <div class="card"><div style="overflow:auto"><table class="table"><thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col" class="hide-sm">Organisation</th><th scope="col" class="hide-sm">Last active</th><th scope="col">Two-step login</th></tr></thead><tbody>
     ${USERS.map(u=>`<tr><td><div class="who">${pav(u.n,colFor(u.n))}<div><b>${u.n}</b><span class="tiny muted">${u.e}</span></div></div></td><td><span class="badge ${u.r==='Caseworker'?'b-prog':u.r==='Manager'?'b-screen':u.r==='System administrator'?'b-bad':'b-new'}">${u.r}</span></td><td class="hide-sm small">${u.org}</td><td class="hide-sm small">${u.last}</td><td>${u.mfa?`<span class="badge b-ok">${I('check')} On</span>`:`<span class="badge b-flag">${I('alert')} Off</span>`}</td></tr>`).join('')}</tbody></table></div></div>
-    <div class="card card-pad" style="margin-top:16px"><h3 style="margin-bottom:10px">What each role can do</h3><div style="overflow:auto"><table class="table"><thead><tr><th>Permission</th><th>Admin staff</th><th>Caseworker</th><th>Manager</th><th>System admin</th></tr></thead><tbody>
+    <div class="card card-pad" style="margin-top:16px"><h3 style="margin-bottom:10px">What each role can do</h3><div style="overflow:auto"><table class="table"><thead><tr><th scope="col">Permission</th><th scope="col">Admin staff</th><th scope="col">Caseworker</th><th scope="col">Manager</th><th scope="col">System admin</th></tr></thead><tbody>
     ${[['Screen & assign applications',1,0,1,0],['View assigned cases',1,1,1,0],['View all cases',1,0,1,0],['See full ID numbers',0,1,0,0],['Reports & export',0,0,1,0],['Manage users & servers',0,0,0,1]].map(r=>`<tr><td class="small" style="font-weight:600">${r[0]}</td>${r.slice(1).map(v=>`<td>${v?`<span style="color:var(--ok)">${I('check')}</span>`:'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
-  if(tab==='audit') body = `<div class="card"><div class="card-pad row between"><div><h3>Audit log · today</h3><p class="small muted">Every view and change of personal data is recorded.</p></div><button class="btn btn-ghost btn-sm" data-act="toast" data-msg="Audit log exported">${I('download')} Export</button></div>
-    <div style="overflow:auto"><table class="table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th class="hide-sm">Where</th></tr></thead><tbody>${AUDIT.map(r=>`<tr><td class="small">${r.t}</td><td class="small" style="font-weight:600">${r.who}</td><td class="small wrap">${esc(r.what)}</td><td class="hide-sm tiny muted">${r.ip}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const F=S.auditF, users=['All',...new Set(AUDIT.map(r=>r.who))], kinds=['All','View','Change','Sign-in','Export','System'];
+  const rows=AUDIT.filter(r=>(F.who==='All'||r.who===F.who)&&(F.k==='All'||r.k===F.k)&&(!F.q||(r.what+' '+r.who).toLowerCase().includes(F.q.toLowerCase())));
+  if(tab==='audit') body = `<div class="card"><div class="card-pad row between wrap"><div><h3>Audit log · today</h3><p class="small muted">Every view and change of personal data is recorded.</p></div><button class="btn btn-ghost btn-sm" data-act="toast" data-msg="Audit log exported (${rows.length} rows)">${I('download')} Export</button></div>
+    <div class="filterbar"><div class="search" style="max-width:none">${I('search')}<input id="auditq" type="search" placeholder="Search actions, references…" aria-label="Search audit log" value="${esc(F.q)}"></div>
+      <select class="select" data-act="auditwho" aria-label="Filter by user">${users.map(u=>`<option ${F.who===u?'selected':''}>${u==='All'?'All users':u}</option>`).join('').replace('<option >All users','<option value="All">All users').replace('<option selected>All users','<option value="All" selected>All users')}</select>
+      <div class="tabs">${kinds.map(k=>`<button class="${F.k===k?'on':''}" data-act="auditk" data-v="${k}" aria-pressed="${F.k===k}">${k}</button>`).join('')}</div></div>
+    <div style="overflow:auto">${rows.length?`<table class="table"><thead><tr><th scope="col">Time</th><th scope="col">User</th><th scope="col">Action</th><th scope="col" class="hide-sm">Type</th><th scope="col" class="hide-sm">Where</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="small">${r.t}</td><td class="small" style="font-weight:600">${r.who}</td><td class="small wrap">${esc(r.what)}</td><td class="hide-sm"><span class="badge b-grey">${r.k}</span></td><td class="hide-sm tiny muted">${r.ip}</td></tr>`).join('')}</tbody></table>`:emptyState('shield','No matching activity','Try another user, type or search term.',`<button class="btn btn-ghost btn-sm" data-act="auditreset">Reset filters</button>`)}</div></div>`;
   if(tab==='health') body = `<div class="stats">${stat('server','c-fin','Uptime (30 days)','99.96%','All services healthy','var(--t-mint)',1)}${stat('refresh','c-edu','Last backup','7:55 AM','Encrypted · kept 30 days')}${stat('msg','c-food','SMS delivered','98.4%','Digicel & GTT · last 24 h','var(--ok)')}${stat('lock','c-house','Security scan','0 high','Last run Nov 9')}</div>
     <div class="card card-pad" style="margin-top:18px"><h3 style="margin-bottom:12px">Environments</h3>${[['Production','IntellectStorm VM · 2 vCPU · 4 GB RAM','b-ok','Healthy','v1.0.3'],['Staging','IntellectStorm VM · 1 vCPU · 2 GB RAM','b-ok','Healthy','v1.0.4-rc1'],['Database','PostgreSQL 16 · encrypted at rest','b-ok','Healthy','42% disk'],['File storage','Encrypted object storage','b-warn','71% used','Review in 30 days']].map(([n,d,c,s,v])=>`<div class="row" style="padding:12px 0;border-bottom:1px solid var(--line-2)"><span class="tchip c-fin">${I('server')}</span><div style="flex:1"><b class="small">${n}</b><div class="tiny muted">${d}</div></div><span class="tiny muted hide-sm" style="margin-right:8px">${v}</span><span class="badge ${c}">${s}</span></div>`).join('')}</div>`;
   return shell(location.hash, `<div class="ph"><div><h1>Admin console</h1><p class="muted">IntellectStorm platform administration for PATH.</p></div></div>
+    ${S.org!=='all'?`<div class="alert ${S.org==='p2'?'alert-flag':'alert-info'}" style="margin-bottom:16px">${I(S.org==='p2'?'building':'eye')}<div><b>Viewing ${S.org==='p2'?'Partner NGO 2 · onboarding preview':'Launch NGO only'}</b><div class="small">${S.org==='p2'?'No applicant data yet. Each NGO only ever sees its own records — IntellectStorm admins can switch between them.':'Users, audit entries and health checks are filtered to this organisation.'}</div></div><button class="btn btn-ghost btn-sm" style="margin-left:auto" data-act="orgall">Show all NGOs</button></div>`:''}
     <div class="tabs" style="margin-bottom:18px">${tabs.map(([h,l])=>`<a href="${h}"><button class="${location.hash===h||(h==='#admin'&&tab==='orgs'&&location.hash==='#admin')?'on':''}" tabindex="-1">${l}</button></a>`).join('')}</div>${body}`);
 }
 
 
 // ---------------- LOGIN ----------------
 const TESTERS = [
-  {role:'public', name:'Shanice Williams', email:'shanice.w@gmail.com', label:'Applicant', note:'Track request PTH-26-0148', col:'#22D3EE'},
-  {role:'admin', name:'Rochelle Bacchus', email:'rbacchus@launchngo.gy', label:'NGO admin staff', note:'Screening queue & walk-ins', col:'#3B82F6'},
-  {role:'caseworker', name:'Kevin Ramnarine', email:'kramnarine@launchngo.gy', label:'Caseworker', note:'4 assigned cases', col:'#8B5CF6'},
-  {role:'manager', name:'Natasha Persaud', email:'npersaud@launchngo.gy', label:'NGO manager', note:'Reports & all cases', col:'#F59E0B'},
-  {role:'it', name:'Marcus Hope', email:'mhope@intellectstorm.gy', label:'IntellectStorm admin', note:'Users, audit log, servers', col:'#FB7185'},
+  {role:'public', name:'Shanice Williams', email:'shanice.w@gmail.com', label:'Applicant', note:'Track request PTH-26-0148', col:'#0E7490'},
+  {role:'admin', name:'Rochelle Bacchus', email:'rbacchus@launchngo.gy', label:'NGO admin staff', note:'Screening queue & walk-ins', col:'#2563EB'},
+  {role:'caseworker', name:'Kevin Ramnarine', email:'kramnarine@launchngo.gy', label:'Caseworker', note:'4 assigned cases', col:'#6D4ED8'},
+  {role:'manager', name:'Natasha Persaud', email:'npersaud@launchngo.gy', label:'NGO manager', note:'Reports & all cases', col:'#B45309'},
+  {role:'it', name:'Marcus Hope', email:'mhope@intellectstorm.gy', label:'IntellectStorm admin', note:'Users, audit log, servers', col:'#BE3455'},
 ];
 const DEMO_PW = 'Demo@2026';
 const L = {busy:false, stage:'form', who:null, err:''};
@@ -555,7 +627,7 @@ function viewLogin(){
       <form id="loginform" class="stack" style="gap:16px;margin-top:26px" autocomplete="off">
         <div class="field"><label for="lemail">Email</label><div class="in-ic">${I('mail')}<input class="input" id="lemail" type="email" placeholder="you@organisation.gy"></div></div>
         <div class="field"><label for="lpw">Password</label><div class="in-ic">${I('lock')}<input class="input" id="lpw" type="password" placeholder="••••••••"><button type="button" class="iconbtn eye" data-act="peek" aria-label="Show password" style="width:34px;height:34px">${I('eye')}</button></div></div>
-        <div class="row between small"><label class="row" style="gap:8px"><input type="checkbox" checked style="accent-color:#3B82F6;width:16px;height:16px"> Remember this device</label><a href="#" data-act="toast" data-msg="Password reset link sent (mockup)" style="color:#93C5FD;font-weight:600">Forgot password?</a></div>
+        <div class="row between small"><label class="row" style="gap:8px"><input type="checkbox" checked style="accent-color:var(--brand);width:16px;height:16px"> Remember this device</label><button type="button" class="link" data-act="toast" data-msg="Password reset link sent (mockup)">Forgot password?</button></div>
         ${L.err?`<div class="alert alert-flag small">${I('alert')}<span>${L.err}</span></div>`:''}
         <button class="btn btn-primary btn-lg btn-block" id="loginbtn" type="submit">Sign in ${I('right')}</button>
       </form>
@@ -564,7 +636,7 @@ function viewLogin(){
   return `<div class="login-wrap"><div class="login-grid">
     <section class="login-card">
       <div class="row between"><a href="#home" class="logo"><span class="logo-mark">${ID('heart')}</span><span>PATH<small>Public Assistance &amp; Triage Hub</small></span></a>
-      <div class="row" style="gap:8px"><img class="islogo" src="intellectstorm-logo.png" alt="IntellectStorm">${themeBtn()}</div></div>
+      <div class="row" style="gap:8px"><img class="islogo" src="intellectstorm-logo.png" alt="IntellectStorm" width="420" height="51">${themeBtn()}</div></div>
       ${form}
     </section>
     <aside class="testers">
@@ -615,22 +687,37 @@ function render(){
   if(PUBLIC_ROUTES.includes(h)) S.role='public';
   else if(S.role==='public') S.role = h.startsWith('#admin')?'it':h==='#reports'?'manager':(h.startsWith('#case-')||h==='#cases')?'caseworker':'admin';
   const html = h.startsWith('#case-') ? viewCase(h.slice(6)) : (ROUTES[h]||ROUTES['#home'])();
-  document.getElementById('app').innerHTML = demobar() + html;
+  const off = S.offline?`<div class="offline" role="status">${I('globe')} You're offline. You can keep working — changes will be sent when you reconnect.</div>`:'';
+  const hadDrawer=!!document.querySelector('.drawer');
+  const ae=document.activeElement, fkey = ae && ae!==document.body ? (ae.id?'#'+CSS.escape(ae.id): ae.dataset.act?`[data-act="${ae.dataset.act}"]${ae.dataset.v!=null?`[data-v="${CSS.escape(ae.dataset.v)}"]`:''}`:null) : null;
+  document.getElementById('app').innerHTML = `<button class="skip" data-act="skip">Skip to main content</button>` + demobar() + off + html;
+  document.querySelectorAll('.field').forEach((f,i)=>{ const l=f.querySelector(':scope > label'), c=f.querySelector('input,select,textarea'); if(l&&c&&!l.htmlFor){ if(!c.id) c.id='fx'+i; l.htmlFor=c.id; } });
+  if(hadDrawer) document.querySelectorAll('.drawer,.scrim').forEach(e=>e.style.animation='none');
+  if(fkey){ const el=document.querySelector(fkey); if(el && !['gsearch','auditq'].includes(el.id)) el.focus({preventScroll:true}); }
+  const dlg=document.querySelector('.drawer [data-act=close],.drawer [data-act=closedrive]'); if(dlg && !document.activeElement?.closest?.('.drawer')) dlg.focus();
   document.title = 'PATH · ' + ({'#home':'Get help','#apply':'Apply','#track':'Track my request','#drives':'Assistance drives'}[h] || 'Staff workspace');
 }
-window.addEventListener('hashchange', ()=>{ S.notifOpen=false; if(!location.hash.startsWith('#screening')) S.sel=null; render(); window.scrollTo(0,0); });
+const STAFF_ROUTES=['#dashboard','#screening','#cases','#allcases','#reports','#managedrives','#drives-staff','#admin','#admin-users','#admin-audit','#admin-health'];
+window.addEventListener('hashchange', ()=>{ S.notifOpen=false; S.driveForm=null; if(!location.hash.startsWith('#screening')) S.sel=null;
+  const staffish = STAFF_ROUTES.includes(location.hash)||location.hash.startsWith('#case-');
+  if(staffish && !window.__noSkel){ S.loading=true; render(); clearTimeout(window.__lt); window.__lt=setTimeout(()=>{ S.loading=false; render(); },420); } else render();
+  window.scrollTo(0,0); });
+window.addEventListener('offline',()=>{ S.offline=true; render(); });
+window.addEventListener('online',()=>{ S.offline=false; render(); toast('Back online · all changes sent'); });
 
 // ---------------- events ----------------
 document.addEventListener('click', e=>{
   const r = e.target.closest('[data-role]');
   if(r){ S.role=r.dataset.role; store(); S.sel=null; S.notifOpen=false; location.hash = ROLES[S.role].home; render(); return; }
+  const hr = e.target.closest('tr[data-href]'); if(hr){ location.hash=hr.dataset.href; return; }
   const pick = e.target.closest('[data-pick]'); if(pick){ S.wiz.types=[pick.dataset.pick]; S.wiz.step=0; }
   const el = e.target.closest('[data-act]'); if(!el) { if(S.notifOpen && !e.target.closest('.notif')){S.notifOpen=false; render();} return; }
   const act = el.dataset.act, v = el.dataset.v;
   const w = S.wiz;
   switch(act){
     case 'toggletype': w.types = w.types.includes(v) ? w.types.filter(x=>x!==v) : [...w.types, v]; render(); break;
-    case 'next': if(!w.types.length) return; w.step=Math.min(3,w.step+1); render(); window.scrollTo(0,0); break;
+    case 'next': if(!w.types.length) return; if(w.step===1 && !validateAbout()){ render(); const f=document.querySelector('[aria-invalid=true]'); if(f) f.focus(); break; } S.wizErr={}; w.step=Math.min(3,w.step+1); render(); window.scrollTo(0,0); break;
+    case 'fillme': Object.assign(w.data,{first:'Shanice',last:'Williams',idno:'104384521',phone:'+592 612 3412',email:'',address:'Lot 14 Hadfield Street, Lodge'}); S.wizErr={}; render(); break;
     case 'back': w.step=Math.max(0,w.step-1); render(); break;
     case 'goto': w.step=+v; render(); break;
     case 'house': w.data.house=v; render(); break;
@@ -653,6 +740,20 @@ document.addEventListener('click', e=>{
     case 'notif': e.stopPropagation(); S.notifOpen=!S.notifOpen; render(); break;
     case 'toast': e.preventDefault(); toast(el.dataset.msg); break;
     case 'autologin': autoLogin(+v); break;
+    case 'orgall': S.org='all'; render(); break;
+    case 'clearq': S.q=''; render(); break;
+    case 'notify': S.notify[v]=!S.notify[v]; render(); break;
+    case 'resend': { const [cid,ci]=v.split('|'); const m=caseFor(cid).comms[+ci]; m.failed=false; m.when='Just now'; render(); toast('Message resent · delivered'); break; }
+    case 'newdrive': S.driveForm={i:null,t:'',type:'food',region:REGIONS[0],d:'2026-12-20',time:'9:00 AM – 1:00 PM',place:'',cap:100,spots:''}; render(); setTimeout(()=>{const x=$('#dv-t'); if(x) x.focus();},50); break;
+    case 'editdrive': { const d=DRIVES[+v]; S.driveForm={i:+v,...d}; render(); break; }
+    case 'closedrive': S.driveForm=null; render(); break;
+    case 'savedrive': { const f=S.driveForm; if(!f.t.trim()||!f.place.trim()){ f.err='Add a title and a location before publishing.'; render(); break; }
+      const d={d:f.d,t:f.t.trim(),type:f.type,region:f.region,place:f.place.trim(),time:f.time,spots:f.spots||(f.cap+' places'),cap:+f.cap||1,reg:f.i==null?0:DRIVES[f.i].reg};
+      if(f.i==null) DRIVES.push(d); else DRIVES[f.i]=d; DRIVES.sort((a,b)=>a.d.localeCompare(b.d)); S.driveForm=null; render(); toast(f.i==null?'Drive published · applicants in the region will be notified':'Drive updated'); break; }
+    case 'deldrive': DRIVES.splice(S.driveForm.i,1); S.driveForm=null; render(); toast('Drive cancelled · registered applicants will be told by SMS'); break;
+    case 'auditk': S.auditF.k=v; render(); break;
+    case 'auditreset': S.auditF={who:'All',k:'All',q:''}; render(); break;
+    case 'skip': { const m=$('#main')||$('main'); if(m) m.focus(); break; }
     case 'theme': S.theme = S.theme==='dark'?'light':'dark'; try{localStorage.setItem('path-theme',S.theme);}catch(e){} applyTheme(); render(); break;
     case 'peek': { const p=$('#lpw'); p.type = p.type==='password'?'text':'password'; break; }
   }
@@ -663,13 +764,25 @@ document.addEventListener('submit', e=>{
   if(!u){ L.err='Use one of the test accounts on the right — or tap one to sign in automatically.'; render(); return; }
   L.who=u; L.busy=true; finishLogin(u);
 });
-document.addEventListener('input', e=>{ const f=e.target.dataset.f; if(f) S.wiz.data[f]=e.target.value; });
+document.addEventListener('input', e=>{
+  if(e.target.dataset.df){ S.driveForm[e.target.dataset.df]=e.target.value; return; }
+  if(e.target.id==='gsearch' || e.target.id==='auditq'){
+    const id=e.target.id, pos=e.target.selectionStart;
+    if(id==='gsearch') S.q=e.target.value; else S.auditF.q=e.target.value;
+    clearTimeout(window.__qt); window.__qt=setTimeout(()=>{ render(); const x=document.getElementById(id); if(x){ x.focus(); try{x.setSelectionRange(pos,pos);}catch(_){} } },160);
+    return;
+  } const f=e.target.dataset.f; if(f) S.wiz.data[f]=e.target.value; });
 document.addEventListener('change', e=>{
   const f=e.target.dataset.f; if(f) S.wiz.data[f]=e.target.value;
+  if(e.target.dataset.df){ const k=e.target.dataset.df; S.driveForm[k]=e.target.value; return; }
+  if(e.target.dataset.act==='auditwho'){ S.auditF.who=e.target.value==='All users'?'All':e.target.value; render(); return; }
+  if(e.target.dataset.act==='orgsel'){ S.org=e.target.value; render(); toast(e.target.value==='p2'?'Viewing Partner NGO 2 (onboarding preview)':'Organisation switched'); return; }
   if(e.target.dataset.act==='rolesel'){ S.role=e.target.value; store(); S.sel=null; location.hash=ROLES[S.role].home; render(); return; }
   if(e.target.dataset.act==='setstatus'){ const id=location.hash.slice(6); const a=APPS.find(x=>x.id===id); a.status=e.target.value; render(); }
 });
-document.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.id==='trackin'){ S.trackRef=e.target.value.trim().toUpperCase(); render(); } if(e.key==='Escape' && S.sel){ S.sel=null; render(); } });
+document.addEventListener('keydown', e=>{
+  if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('tr[data-act=open],tr[data-href]')){ e.preventDefault(); if(e.target.dataset.href) location.hash=e.target.dataset.href; else { S.sel=e.target.dataset.v; render(); } return; }
+  if(e.key==='Escape' && S.driveForm){ S.driveForm=null; render(); return; } if(e.key==='Enter' && e.target.id==='trackin'){ S.trackRef=e.target.value.trim().toUpperCase(); render(); } if(e.key==='Escape' && S.sel){ S.sel=null; render(); } });
 
 // boot
 try{ const r=localStorage.getItem('path-demo-role'); if(r && ROLES[r]) S.role=r; }catch(e){}
