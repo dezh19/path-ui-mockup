@@ -4,7 +4,7 @@ Interactive UI mockup of **PATH**, the assistance management system that Group 9
 
 **Live demo:** see the GitHub Pages link in the repository's About section.
 
-Use the **"View as"** bar at the top to switch between:
+Start on the **sign-in page** and tap any **test account** to sign in automatically (staff accounts go through a two-step login). Password for every test account: `Demo@2026`. Once inside, the **"View as"** bar at the top switches between:
 
 | View | What you can try |
 | --- | --- |
@@ -16,4 +16,4 @@ Use the **"View as"** bar at the top to switch between:
 
 This is a static mockup for CSE 2101 Software Engineering (University of Guyana). All names, numbers and records are fictional, and nothing you enter leaves your browser.
 
-Built with plain HTML, CSS and JavaScript — no build step. Open `index.html` to run it locally.
+Built with plain HTML, CSS and JavaScript — no frameworks and no build step. Dark glass design, made for phones first. Open `index.html` to run it locally.

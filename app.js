@@ -179,6 +179,7 @@ function demobar(){
     <span class="muted" style="color:#9FB1AE">View as:</span>
     <div class="rolepick">${Object.entries(ROLES).map(([k,r])=>`<button data-role="${k}" class="${S.role===k?'on':''}">${r.label}</button>`).join('')}</div><select class="role-select" data-act="rolesel" aria-label="View as">${Object.entries(ROLES).map(([k,r])=>`<option value="${k}" ${S.role===k?'selected':''}>${r.label}</option>`).join('')}</select>
     <span class="powered">Hosted by <img src="intellectstorm-logo.png" alt="IntellectStorm"></span>
+    <a href="#login" class="signout">${I('logout')} Sign out</a>
   </div></div>`;
 }
 function pubHeader(route){
@@ -187,6 +188,7 @@ function pubHeader(route){
     <a href="#home" class="logo"><span class="logo-mark">${I('heart')}</span><span>PATH<small>Public Assistance &amp; Triage Hub</small></span></a>
     <nav class="pub-nav">${nav.map(([h,l])=>`<a href="${h}" class="${route===h?'on':''}">${l}</a>`).join('')}</nav>
     <a href="#apply" class="btn btn-primary btn-sm" style="margin-left:auto" data-mobile-only>${I('plus')} Apply</a>
+    <a href="#login" class="btn btn-ghost btn-sm hide-mobile">${I('user')} Staff sign in</a>
   </div></header>`;
 }
 function pubFooter(){
@@ -249,21 +251,21 @@ function viewHome(){
   return `${pubHeader('#home')}<div class="page">
   <section class="hero">
     <div style="position:relative;z-index:1">
-      <span class="badge" style="background:rgba(255,255,255,.18);color:#fff">${I('heart')} Help for families across Guyana</span>
-      <h1 style="margin-top:14px">Asking for help<br>should be simple.</h1>
+      <span class="badge" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)">${I('heart')} Help for families across Guyana</span>
+      <h1 style="margin-top:16px">Asking for help<br><span class="grad-text" style="background-image:linear-gradient(90deg,#67E8F9,#A5B4FC)">should be simple.</span></h1>
       <p class="lead">Apply for food, education, financial or housing support in one short form — from your phone, in about 5 minutes. Then follow every step of your request.</p>
       <div class="row wrap">
         <a href="#apply" class="btn btn-accent btn-lg">Start my application ${I('right')}</a>
-        <a href="#track" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff">${I('search')} Track a request</a>
+        <a href="#track" class="btn btn-lg btn-ghost">${I('search')} Track a request</a>
       </div>
       <div class="chips"><span class="chip">${I('clock')} About 5 minutes</span><span class="chip">${I('lock')} Your details are protected</span><span class="chip">${I('msg')} SMS &amp; email updates</span></div>
     </div>
     <div class="hero-card">
       <div class="row between"><b>Request PTH-26-0139</b>${badge('progress')}</div>
-      <div class="mini-step"><span class="ring" style="background:var(--brand);color:#fff">${I('check')}</span><div><b>Received</b><div class="tiny muted">Nov 8 · Confirmation sent by SMS</div></div></div>
-      <div class="mini-step"><span class="ring" style="background:var(--brand);color:#fff">${I('check')}</span><div><b>Reviewed by our team</b><div class="tiny muted">Nov 8 · Caseworker assigned</div></div></div>
-      <div class="mini-step"><span class="ring" style="background:var(--accent-50);color:var(--accent)">${I('clock')}</span><div><b>Being assessed</b><div class="tiny muted">Your caseworker visited on Nov 10</div></div></div>
-      <div class="mini-step"><span class="ring" style="background:var(--line-2);color:var(--ink-3)">${I('heart')}</span><div><b>Decision &amp; support</b><div class="tiny muted">We'll text you as soon as it's ready</div></div></div>
+      <div class="mini-step"><span class="ring ok">${I('check')}</span><div><b>Received</b><div class="tiny muted">Nov 8 · Confirmation sent by SMS</div></div></div>
+      <div class="mini-step"><span class="ring ok">${I('check')}</span><div><b>Reviewed by our team</b><div class="tiny muted">Nov 8 · Caseworker assigned</div></div></div>
+      <div class="mini-step"><span class="ring" style="background:var(--accent-50);color:var(--accent);box-shadow:0 0 16px rgba(251,191,36,.35)">${I('clock')}</span><div><b>Being assessed</b><div class="tiny muted">Your caseworker visited on Nov 10</div></div></div>
+      <div class="mini-step"><span class="ring" style="background:rgba(255,255,255,.07);color:var(--ink-3)">${I('heart')}</span><div><b>Decision &amp; support</b><div class="tiny muted">We'll text you as soon as it's ready</div></div></div>
     </div>
   </section>
 
@@ -395,7 +397,7 @@ function viewTrack(){
 }
 
 // ---------------- STAFF SCREENS ----------------
-function stat(ic,cls,lbl,val,delta,dcol){ return `<div class="card stat"><div class="lbl"><span class="ic ${cls}">${I(ic)}</span>${lbl}</div><div class="val">${val}</div><div class="delta" style="color:${dcol||'var(--ink-3)'}">${delta}</div></div>`; }
+function stat(ic,cls,lbl,val,delta,dcol,hl){ return `<div class="card stat ${hl?'hl':''}"><div class="lbl"><span class="ic ${cls}">${I(ic)}</span>${lbl}</div><div class="val">${val}</div><div class="delta" style="color:${dcol||'var(--ink-3)'}">${delta}</div></div>`; }
 function viewDashboard(){
   const waiting = APPS.filter(a=>['new','screening','docs'].includes(a.status));
   const who = STAFF[ROLES[S.role].who].name.split(' ')[0];
@@ -403,7 +405,7 @@ function viewDashboard(){
     <div class="ph"><div><p class="muted">Thursday, November 12</p><h1>Good morning, ${who} 👋</h1></div>
       <div class="row wrap"><a href="#intake" class="btn btn-ghost">${I('walk')} Log walk-in</a><a href="#screening" class="btn btn-primary">${I('inbox')} Open screening queue</a></div></div>
     <div class="stats">
-      ${stat('inbox','c-fin','New this week','23','▲ 6 vs last week','var(--ok)')}
+      ${stat('inbox','c-fin','New this week','23','▲ 6 vs last week','#D9F99D',1)}
       ${stat('clock','c-food','Waiting for screening',waiting.length,'Oldest: 2 days','var(--warn)')}
       ${stat('alert','c-house','Flagged',APPS.filter(a=>a.flags.length).length,'1 duplicate · 1 incomplete','var(--coral)')}
       ${stat('folder','c-edu','Open cases','41','Across 3 caseworkers')}
@@ -423,7 +425,7 @@ function appTable(list, compact){
   if(!list.length) return `<div class="card-pad muted">Nothing here — nice work!</div>`;
   return `<div style="overflow:auto"><table class="table"><thead><tr><th>Applicant</th><th>Help</th><th class="hide-sm">Received</th>${compact?'':'<th class="hide-sm">Channel</th>'}<th>Status</th><th class="hide-sm">Flags</th></tr></thead><tbody>
   ${list.map(a=>`<tr data-act="open" data-v="${a.id}" class="${S.sel===a.id?'sel':''}"><td><div class="who">${pav(a.name,colFor(a.name))}<div><b>${a.name}</b><span class="tiny muted">${a.id} · ${RSHORT(a.region)}</span></div></div></td>
-  <td>${typeChips(a.types)}</td><td class="hide-sm small">${a.date}</td>${compact?'':`<td class="hide-sm"><span class="badge b-grey">${I(a.ch==='Online'?'globe':a.ch==='Phone'?'phone':'walk')} ${a.ch}</span></td>`}<td>${badge(a.status)}</td>
+  <td class="t-help">${typeChips(a.types)}</td><td class="hide-sm small">${a.date}</td>${compact?'':`<td class="hide-sm"><span class="badge b-grey">${I(a.ch==='Online'?'globe':a.ch==='Phone'?'phone':'walk')} ${a.ch}</span></td>`}<td class="t-status">${badge(a.status)}</td>
   <td class="hide-sm">${a.flags.includes('dup')?`<span class="badge b-flag">${I('copy')} Possible duplicate</span>`:''}${a.flags.includes('incomplete')?`<span class="badge b-warn">${I('alert')} Incomplete</span>`:''}${a.flags.length?'':'<span class="muted tiny">—</span>'}</td></tr>`).join('')}
   </tbody></table></div>`;
 }
@@ -477,7 +479,7 @@ function viewCases(){
   const mine = APPS.filter(a=>a.cw==='cw1');
   return shell('#cases', `
     <div class="ph"><div><h1>My cases</h1><p class="muted">You only see cases assigned to you.</p></div><div class="tabs"><button class="on">Open (${mine.length})</button><button>Due this week</button><button>Closed</button></div></div>
-    <div class="stats" style="margin-bottom:18px">${stat('folder','c-edu','Open cases',mine.length,'2 need a visit')}${stat('repeat','c-food','Recurring support','2','Next payment Jan 6')}${stat('msg','c-fin','Unread replies','1','From Sharon Bovell')}${stat('check','c-ok','Closed this month','6','▲ 2 vs Oct','var(--ok)')}</div>
+    <div class="stats" style="margin-bottom:18px">${stat('folder','c-edu','Open cases',mine.length,'2 need a visit','',1)}${stat('repeat','c-food','Recurring support','2','Next payment Jan 6')}${stat('msg','c-fin','Unread replies','1','From Sharon Bovell')}${stat('check','c-ok','Closed this month','6','▲ 2 vs Oct','var(--ok)')}</div>
     <div class="case-list">${mine.map(a=>`<a href="#case-${a.id}" class="card case-card">${pav(a.name,colFor(a.name))}<div><div class="row wrap" style="gap:8px"><b>${a.name}</b>${badge(a.status)}</div><div class="small muted">${a.id} · ${RSHORT(a.region)} · assigned ${a.date}</div></div><div class="row">${typeChips(a.types)}<span class="muted">${I('right','')}</span></div></a>`).join('')}</div>`);
 }
 function viewAllCases(){
@@ -512,7 +514,7 @@ function viewCase(id){
           <dt>ID number</dt><dd><span class="mask">${revealed?'1043'+a.idno.slice(-4)+'2':a.idno}</span> ${revealed?'':`<button class="btn btn-sm btn-ghost" style="padding:3px 8px;margin-left:4px" data-act="reveal" data-v="${id}">${I('eye')} Show</button>`}</dd>
           <dt>Mobile</dt><dd>${a.phone}</dd><dt>Household</dt><dd>${a.kids+1} people</dd><dt>Caseworker</dt><dd class="row" style="gap:6px">${a.cw?av(a.cw)+STAFF[a.cw].name:'Not assigned'}</dd></dl>
           <div class="tiny muted row" style="gap:6px;margin-top:12px">${I('shield','')} Viewing sensitive details is recorded in the audit log.</div></div>
-        ${c.recurring?`<div class="card card-pad"><div class="row" style="margin-bottom:6px"><span class="tchip c-edu">${I('repeat')}</span><h3>Recurring support</h3></div><p class="small muted">${c.recurring.label}</p>
+        ${c.recurring?`<div class="card card-pad recur"><div class="row" style="margin-bottom:6px"><span class="tchip" style="background:rgba(255,255,255,.18);color:#fff">${I('repeat')}</span><h3>Recurring support</h3></div><p class="small muted">${c.recurring.label}</p>
           ${c.recurring.terms.map(t=>`<div class="term"><span class="small" style="font-weight:600">${t.t}</span><span class="small">${t.amt}</span>${t.st==='paid'?'<span class="badge b-ok">Paid</span>':t.st==='scheduled'?'<span class="badge b-new">Scheduled</span>':'<span class="badge b-grey">Pending</span>'}</div>`).join('')}
           <button class="btn btn-sm btn-ghost" style="margin-top:12px;width:100%" data-act="toast" data-msg="Term added to schedule">${I('plus')} Add term</button></div>`:''}
         <div class="card card-pad"><h3 style="margin-bottom:10px">Documents</h3>${['National ID (front).jpg','Supporting letter.pdf'].map(f=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line-2)"><span class="tchip c-fin">${I('file')}</span><span class="small" style="flex:1">${f}</span><button class="iconbtn" aria-label="Download">${I('download')}</button></div>`).join('')}</div>
@@ -527,17 +529,17 @@ function viewReports(){
   const months=[['Jun',41],['Jul',55],['Aug',62],['Sep',71],['Oct',79],['Nov',88]]; const mx=88;
   return shell('#reports', `
     <div class="ph"><div><h1>Reports</h1><p class="muted">Launch NGO · June to November 2026</p></div><div class="row wrap"><span class="pill">${I('cal','')} Last 6 months</span><button class="btn btn-ghost" data-act="toast" data-msg="Report exported as PDF">${I('download')} Export PDF</button></div></div>
-    <div class="stats">${stat('inbox','c-fin','Requests received','396','▲ 11% vs previous 6 months','var(--ok)')}${stat('check','c-ok','Approved','281','71% approval rate')}${stat('clock','c-food','Avg. time to decision','4.2 days','▼ 1.3 days','var(--ok)')}${stat('globe','c-edu','Applied online','64%','Rest by phone or walk-in')}</div>
+    <div class="stats">${stat('inbox','c-fin','Requests received','396','▲ 11% vs previous 6 months','#D9F99D',1)}${stat('check','c-ok','Approved','281','71% approval rate')}${stat('clock','c-food','Avg. time to decision','4.2 days','▼ 1.3 days','var(--ok)')}${stat('globe','c-edu','Applied online','64%','Rest by phone or walk-in')}</div>
     <div class="case-grid" style="margin-top:18px;grid-template-columns:1.3fr 1fr">
-      <div class="card card-pad"><h3>Requests per month</h3><svg class="chartsvg" viewBox="0 0 520 230" style="margin-top:12px">
+      <div class="card card-pad"><h3>Requests per month</h3><svg class="chartsvg" viewBox="0 0 520 230" style="margin-top:12px"><defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#6366F1"/></linearGradient><linearGradient id="gb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(148,163,184,.35)"/><stop offset="1" stop-color="rgba(148,163,184,.08)"/></linearGradient></defs>
         ${[0,25,50,75,100].map(v=>`<line x1="34" x2="510" y1="${200-v*1.8}" y2="${200-v*1.8}" stroke="var(--line-2)"/><text x="26" y="${204-v*1.8}" text-anchor="end" font-size="11" fill="var(--ink-3)">${v}</text>`).join('')}
-        ${months.map(([m,v],i)=>`<rect x="${52+i*78}" y="${200-v*1.8}" width="46" height="${v*1.8}" rx="8" fill="${i===5?'var(--brand)':'var(--brand-100)'}"/><text x="${75+i*78}" y="${192-v*1.8}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${v}</text><text x="${75+i*78}" y="220" text-anchor="middle" font-size="12" fill="var(--ink-3)">${m}</text>`).join('')}
+        ${months.map(([m,v],i)=>`<rect x="${52+i*78}" y="${200-v*1.8}" width="46" height="${v*1.8}" rx="8" fill="${i===5?'url(#gb)':'url(#gb2)'}"/><text x="${75+i*78}" y="${192-v*1.8}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${v}</text><text x="${75+i*78}" y="220" text-anchor="middle" font-size="12" fill="var(--ink-3)">${m}</text>`).join('')}
       </svg></div>
       <div class="card card-pad"><h3>By type of help</h3><div class="donut-wrap" style="margin-top:12px">${donut([['Food',152,'#F2A93B'],['Education',104,'#6D5BD0'],['Financial',87,'#2F80C9'],['Housing',53,'#E8604C']])}
         <div class="legend">${[['Food',152,'#F2A93B'],['Education',104,'#6D5BD0'],['Financial',87,'#2F80C9'],['Housing',53,'#E8604C']].map(([l,v,c])=>`<span><i style="background:${c}"></i>${l} · <b>${v}</b></span>`).join('')}</div></div></div>
     </div>
     <div class="case-grid" style="margin-top:18px;grid-template-columns:1fr 1fr">
-      <div class="card card-pad"><h3 style="margin-bottom:14px">By region</h3><div class="bars">${[['Region 4',168],['Region 6',71],['Region 3',58],['Region 10',49],['Region 2',30],['Region 5',20]].map(([r,v])=>`<div class="bar"><span>${r}</span><div class="track"><span style="width:${v/168*100}%;background:var(--brand)"></span></div><b>${v}</b></div>`).join('')}</div></div>
+      <div class="card card-pad"><h3 style="margin-bottom:14px">By region</h3><div class="bars">${[['Region 4',168],['Region 6',71],['Region 3',58],['Region 10',49],['Region 2',30],['Region 5',20]].map(([r,v])=>`<div class="bar"><span>${r}</span><div class="track"><span style="width:${v/168*100}%;background:linear-gradient(90deg,#22D3EE,#6366F1);color:#3B82F6"></span></div><b>${v}</b></div>`).join('')}</div></div>
       <div class="card card-pad"><h3 style="margin-bottom:14px">By status (November)</h3><div class="bars">${[['Approved',51,'var(--ok)'],['In progress',19,'var(--violet)'],['Screening',9,'var(--accent)'],['Not approved',6,'var(--bad)'],['Docs requested',3,'var(--warn)']].map(([r,v,c])=>`<div class="bar"><span>${r}</span><div class="track"><span style="width:${v/51*100}%;background:${c}"></span></div><b>${v}</b></div>`).join('')}</div></div>
     </div>`);
 }
@@ -556,14 +558,85 @@ function viewAdmin(tab){
     ${[['Screen & assign applications',1,0,1,0],['View assigned cases',1,1,1,0],['View all cases',1,0,1,0],['See full ID numbers',0,1,0,0],['Reports & export',0,0,1,0],['Manage users & servers',0,0,0,1]].map(r=>`<tr><td class="small" style="font-weight:600">${r[0]}</td>${r.slice(1).map(v=>`<td>${v?`<span style="color:var(--ok)">${I('check')}</span>`:'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
   if(tab==='audit') body = `<div class="card"><div class="card-pad row between"><div><h3>Audit log · today</h3><p class="small muted">Every view and change of personal data is recorded.</p></div><button class="btn btn-ghost btn-sm" data-act="toast" data-msg="Audit log exported">${I('download')} Export</button></div>
     <div style="overflow:auto"><table class="table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th class="hide-sm">Where</th></tr></thead><tbody>${AUDIT.map(r=>`<tr><td class="small">${r.t}</td><td class="small" style="font-weight:600">${r.who}</td><td class="small wrap">${esc(r.what)}</td><td class="hide-sm tiny muted">${r.ip}</td></tr>`).join('')}</tbody></table></div></div>`;
-  if(tab==='health') body = `<div class="stats">${stat('server','c-fin','Uptime (30 days)','99.96%','All services healthy','var(--ok)')}${stat('refresh','c-edu','Last backup','7:55 AM','Encrypted · kept 30 days')}${stat('msg','c-food','SMS delivered','98.4%','Digicel & GTT · last 24 h','var(--ok)')}${stat('lock','c-house','Security scan','0 high','Last run Nov 9')}</div>
+  if(tab==='health') body = `<div class="stats">${stat('server','c-fin','Uptime (30 days)','99.96%','All services healthy','#D9F99D',1)}${stat('refresh','c-edu','Last backup','7:55 AM','Encrypted · kept 30 days')}${stat('msg','c-food','SMS delivered','98.4%','Digicel & GTT · last 24 h','var(--ok)')}${stat('lock','c-house','Security scan','0 high','Last run Nov 9')}</div>
     <div class="card card-pad" style="margin-top:18px"><h3 style="margin-bottom:12px">Environments</h3>${[['Production','IntellectStorm VM · 2 vCPU · 4 GB RAM','b-ok','Healthy','v1.0.3'],['Staging','IntellectStorm VM · 1 vCPU · 2 GB RAM','b-ok','Healthy','v1.0.4-rc1'],['Database','PostgreSQL 16 · encrypted at rest','b-ok','Healthy','42% disk'],['File storage','Encrypted object storage','b-warn','71% used','Review in 30 days']].map(([n,d,c,s,v])=>`<div class="row" style="padding:12px 0;border-bottom:1px solid var(--line-2)"><span class="tchip c-fin">${I('server')}</span><div style="flex:1"><b class="small">${n}</b><div class="tiny muted">${d}</div></div><span class="tiny muted hide-sm" style="margin-right:8px">${v}</span><span class="badge ${c}">${s}</span></div>`).join('')}</div>`;
   return shell(location.hash, `<div class="ph"><div><h1>Admin console</h1><p class="muted">IntellectStorm platform administration for PATH.</p></div></div>
     <div class="tabs" style="margin-bottom:18px">${tabs.map(([h,l])=>`<a href="${h}"><button class="${location.hash===h||(h==='#admin'&&tab==='orgs'&&location.hash==='#admin')?'on':''}" tabindex="-1">${l}</button></a>`).join('')}</div>${body}`);
 }
 
+
+// ---------------- LOGIN ----------------
+const TESTERS = [
+  {role:'public', name:'Shanice Williams', email:'shanice.w@gmail.com', label:'Applicant', note:'Track request PTH-26-0148', col:'#22D3EE'},
+  {role:'admin', name:'Rochelle Bacchus', email:'rbacchus@launchngo.gy', label:'NGO admin staff', note:'Screening queue & walk-ins', col:'#3B82F6'},
+  {role:'caseworker', name:'Kevin Ramnarine', email:'kramnarine@launchngo.gy', label:'Caseworker', note:'4 assigned cases', col:'#8B5CF6'},
+  {role:'manager', name:'Natasha Persaud', email:'npersaud@launchngo.gy', label:'NGO manager', note:'Reports & all cases', col:'#F59E0B'},
+  {role:'it', name:'Marcus Hope', email:'mhope@intellectstorm.gy', label:'IntellectStorm admin', note:'Users, audit log, servers', col:'#FB7185'},
+];
+const DEMO_PW = 'Demo@2026';
+const L = {busy:false, stage:'form', who:null, err:''};
+function viewLogin(){
+  const t = L.who;
+  const form = L.stage==='otp' ? `
+      <div class="row" style="gap:12px;margin-top:22px">${pav(t.name,t.col)}<div><b>${t.name}</b><div class="tiny muted">${t.email}</div></div></div>
+      <h1 style="font-size:28px">Two-step <span class="grad-text">verification</span></h1>
+      <p class="muted">Enter the 6-digit code we sent to your phone ending ••47.</p>
+      <div class="otp" id="otp">${[0,1,2,3,4,5].map(i=>`<span id="otp${i}"></span>`).join('')}</div>
+      <button class="btn btn-primary btn-lg btn-block" id="otpbtn" disabled><span class="spin"></span> Verifying…</button>
+      <p class="tiny muted" style="text-align:center;margin-top:14px">${I('shield','')} Staff accounts always use two-step login to protect applicants' data.</p>`
+  : `
+      <h1>Welcome <span class="grad-text">back</span></h1>
+      <p class="muted">Sign in to PATH to manage requests for assistance.</p>
+      <form id="loginform" class="stack" style="gap:16px;margin-top:26px" autocomplete="off">
+        <div class="field"><label for="lemail">Email</label><div class="in-ic">${I('mail')}<input class="input" id="lemail" type="email" placeholder="you@organisation.gy"></div></div>
+        <div class="field"><label for="lpw">Password</label><div class="in-ic">${I('lock')}<input class="input" id="lpw" type="password" placeholder="••••••••"><button type="button" class="iconbtn eye" data-act="peek" aria-label="Show password" style="width:34px;height:34px">${I('eye')}</button></div></div>
+        <div class="row between small"><label class="row" style="gap:8px"><input type="checkbox" checked style="accent-color:#3B82F6;width:16px;height:16px"> Remember this device</label><a href="#" data-act="toast" data-msg="Password reset link sent (mockup)" style="color:#93C5FD;font-weight:600">Forgot password?</a></div>
+        ${L.err?`<div class="alert alert-flag small">${I('alert')}<span>${L.err}</span></div>`:''}
+        <button class="btn btn-primary btn-lg btn-block" id="loginbtn" type="submit">Sign in ${I('right')}</button>
+      </form>
+      <div class="divider">or</div>
+      <a href="#home" class="btn btn-ghost btn-block">${I('heart')} Ask for help without an account</a>`;
+  return `<div class="login-wrap"><div class="login-grid">
+    <section class="login-card">
+      <div class="row between"><a href="#home" class="logo"><span class="logo-mark">${I('heart')}</span><span>PATH<small>Public Assistance &amp; Triage Hub</small></span></a>
+      <img src="intellectstorm-logo.png" alt="IntellectStorm" style="height:18px;background:#fff;border-radius:7px;padding:3px 7px"></div>
+      ${form}
+    </section>
+    <aside class="testers">
+      <div class="row between"><span class="badge b-prog">${I('spark')} Demo mode</span><span class="tiny muted">Password: <span class="pw-chip">${DEMO_PW}</span></span></div>
+      <h2 style="font-size:24px;margin:16px 0 4px">Test accounts</h2>
+      <p class="muted small" style="margin-bottom:18px">Tap an account to sign in automatically and see PATH from that person's view.</p>
+      <div class="stack" style="gap:10px">${TESTERS.map((u,i)=>`<button class="tester ${L.who===u&&L.busy?'busy':''}" data-act="autologin" data-v="${i}" ${L.busy?'disabled':''}>
+        ${pav(u.name,u.col)}<span class="meta"><b>${u.name}</b><span>${u.label} · ${u.note}</span></span><span class="go">${L.who===u&&L.busy?'<span class="spin"></span>':I('right')}</span></button>`).join('')}</div>
+      <p class="tiny muted" style="margin-top:16px">${I('lock','')} All people and records in this mockup are fictional.</p>
+    </aside>
+  </div></div>`;
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+async function typeInto(el, text, speed){ el.classList.add('caret'); el.value=''; for(const ch of text){ el.value+=ch; await sleep(speed); } el.classList.remove('caret'); }
+async function autoLogin(i){
+  if(L.busy) return; const u=TESTERS[i]; L.busy=true; L.who=u; L.err=''; L.stage='form'; render();
+  const em=$('#lemail'), pw=$('#lpw'); em.focus();
+  await typeInto(em, u.email, 28); pw.focus(); await typeInto(pw, DEMO_PW, 45); await sleep(150);
+  finishLogin(u);
+}
+async function finishLogin(u){
+  const b=$('#loginbtn'); if(b){ b.innerHTML='<span class="spin"></span> Signing in…'; b.disabled=true; }
+  await sleep(650);
+  if(u.role!=='public'){
+    L.stage='otp'; render();
+    const code='482917';
+    for(let k=0;k<6;k++){ await sleep(140); const c=$('#otp'+k); if(!c) return; c.textContent=code[k]; c.classList.add('f'); }
+    await sleep(450);
+  }
+  L.busy=false; L.stage='form'; S.role=u.role; store();
+  if(u.role==='public'){ S.trackRef='PTH-26-0148'; location.hash='#track'; } else location.hash=ROLES[u.role].home;
+  toast(`Signed in as ${u.name}`);
+}
+
 // ---------------- router ----------------
 const ROUTES = {
+  '#login':()=>viewLogin(),
   '#home':()=>viewHome(), '#apply':()=>viewApply(), '#track':()=>viewTrack(), '#drives':()=>viewDrives(false), '#success':()=>viewSuccess(),
   '#dashboard':()=>viewDashboard(), '#screening':()=>viewScreening(), '#intake':()=>viewIntake(), '#cases':()=>viewCases(), '#allcases':()=>viewAllCases(),
   '#reports':()=>viewReports(), '#managedrives':()=>shell('#managedrives', viewDrives(true)), '#drives-staff':()=>shell('#drives-staff', viewDrives(true)),
@@ -571,7 +644,8 @@ const ROUTES = {
 };
 const PUBLIC_ROUTES = ['#home','#apply','#track','#drives','#success'];
 function render(){
-  let h = location.hash || '#home';
+  let h = location.hash || '#login';
+  if(h==='#login'){ document.getElementById('app').innerHTML = viewLogin(); document.title='PATH · Sign in'; return; }
   // keep the demo role in sync with the area being viewed
   if(PUBLIC_ROUTES.includes(h)) S.role='public';
   else if(S.role==='public') S.role = h.startsWith('#admin')?'it':h==='#reports'?'manager':(h.startsWith('#case-')||h==='#cases')?'caseworker':'admin';
@@ -613,7 +687,15 @@ document.addEventListener('click', e=>{
     case 'reveal': S.reveal[v]=true; AUDIT.unshift({t:'Now', who:STAFF[ROLES[S.role].who].name, what:`Revealed ID number on ${v}`, ip:'Office'}); render(); toast('ID shown · this view was recorded in the audit log'); break;
     case 'notif': e.stopPropagation(); S.notifOpen=!S.notifOpen; render(); break;
     case 'toast': e.preventDefault(); toast(el.dataset.msg); break;
+    case 'autologin': autoLogin(+v); break;
+    case 'peek': { const p=$('#lpw'); p.type = p.type==='password'?'text':'password'; break; }
   }
+});
+document.addEventListener('submit', e=>{
+  if(e.target.id!=='loginform') return; e.preventDefault();
+  const em=($('#lemail').value||'').trim().toLowerCase(); const u=TESTERS.find(t=>t.email===em);
+  if(!u){ L.err='Use one of the test accounts on the right — or tap one to sign in automatically.'; render(); return; }
+  L.who=u; L.busy=true; finishLogin(u);
 });
 document.addEventListener('input', e=>{ const f=e.target.dataset.f; if(f) S.wiz.data[f]=e.target.value; });
 document.addEventListener('change', e=>{
@@ -624,6 +706,6 @@ document.addEventListener('change', e=>{
 document.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.id==='trackin'){ S.trackRef=e.target.value.trim().toUpperCase(); render(); } if(e.key==='Escape' && S.sel){ S.sel=null; render(); } });
 
 // boot
-try{ const r=localStorage.getItem('path-demo-role'); if(r && ROLES[r] && !location.hash) S.role=r; }catch(e){}
-if(!location.hash) location.hash = ROLES[S.role].home;
+try{ const r=localStorage.getItem('path-demo-role'); if(r && ROLES[r]) S.role=r; }catch(e){}
+if(!location.hash) location.hash = '#login';
 render();
