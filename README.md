@@ -4,6 +4,9 @@ Interactive UI mockup of **PATH**, the assistance management system that Group 9
 
 **Live demo:** https://path-ui-mockup.netlify.app
 
+**Walkthrough video (61 s):** https://path-ui-mockup.netlify.app/docs/PATH_Walkthrough_Group9.mp4  
+**UI screens (PDF, 31 figures):** https://path-ui-mockup.netlify.app/docs/PATH_UI_Screens_Group9.pdf
+
 ![PATH staff dashboard](docs/screens/dashboard.jpg)
 
 ## Try it
