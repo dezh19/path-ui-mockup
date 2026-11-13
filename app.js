@@ -151,7 +151,7 @@ function demobar(){
   return `<div class="demobar"><div class="inner">
     <span class="tag">PATH · UI MOCKUP</span>
     <span class="muted">View as:</span>
-    <div class="rolepick">${Object.entries(ROLES).map(([k,r])=>`<button data-role="${k}" class="${S.role===k?'on':''}">${r.label}</button>`).join('')}</div><select class="role-select" data-act="rolesel" aria-label="View as">${Object.entries(ROLES).map(([k,r])=>`<option value="${k}" ${S.role===k?'selected':''}>${r.label}</option>`).join('')}</select>
+    <div class="rolepick">${Object.entries(ROLES).map(([k,r])=>`<button data-role="${k}" class="${S.role===k?'on':''}" aria-pressed="${S.role===k}">${r.label}</button>`).join('')}</div><select class="role-select" data-act="rolesel" aria-label="View as">${Object.entries(ROLES).map(([k,r])=>`<option value="${k}" ${S.role===k?'selected':''}>${r.label}</option>`).join('')}</select>
     <span class="powered">Hosted by <img src="intellectstorm-logo.png" alt="IntellectStorm" width="420" height="51"></span>
     ${themeBtn()}<a href="#login" class="signout">${I('logout')} Sign out</a>
   </div></div>`;
