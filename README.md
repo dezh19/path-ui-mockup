@@ -15,7 +15,7 @@ Start on the **sign-in page** and tap any **test account** to sign in automatica
 
 | View | What you can try |
 | --- | --- |
-| Applicant (public) | Home page, 4-step application with inline error messages, confirmation with SMS preview, tracking a request (try `PTH-26-0139`, `PTH-26-0144`), choosing how to be contacted, assistance drives by region |
+| Applicant (public) | Home page, 4-step application with inline error messages, confirmation with SMS preview, tracking a request (try `PTH-26-0139`, `PTH-26-0144`), choosing how to be contacted, assistance drives by region, and a **Donate here** button on the drives page (give money or items to a drive) |
 | NGO admin staff | Dashboard, screening queue with duplicate and incomplete flags, assigning a caseworker, logging walk-in and phone requests, planning drives (create, edit, cancel, registrations against capacity) |
 | Caseworker | Only their assigned cases, case notes, communication log (including a failed SMS with **Retry**), recurring tuition support, ID number hidden until revealed (recorded in the audit log) |
 | NGO manager | All cases, reports by month, type of help, region and status |

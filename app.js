@@ -114,7 +114,7 @@ const S = {
   sel:null, notifOpen:false, reveal:{},
   adminTab:'orgs',
   theme:'dark',
-  q:'', loading:false, offline:!navigator.onLine, driveForm:null, auditF:{who:'All',k:'All',q:''}, org:'all', wizErr:{}, notify:{sms:true,email:false,drives:true},
+  q:'', loading:false, offline:!navigator.onLine, driveForm:null, donate:null, auditF:{who:'All',k:'All',q:''}, org:'all', wizErr:{}, notify:{sms:true,email:false,drives:true},
 };
 const ROLES = {
   public:{label:'Applicant (public)', home:'#home'},
@@ -303,12 +303,58 @@ function viewDrives(staff){
   const list = DRIVES.filter(d=>S.driveFilter==='All'||RSHORT(d.region)===S.driveFilter);
   const body = `<div class="ph"><div>${staff?'<p class="eyebrow">Launch NGO</p>':''}<h1>Assistance drives</h1><p class="muted">${staff?'Plan drives, track registrations and publish them to the public portal.':'Current and upcoming support events, by region.'}</p></div>${staff?`<button class="btn btn-primary" data-act="newdrive">${I('plus')} New drive</button>`:''}</div>
     ${staff?`<div class="stats" style="margin-bottom:16px">${stat('cal','c-edu','Upcoming drives',DRIVES.length,'Next: '+new Date(DRIVES[0].d+'T12:00:00').toLocaleString('en',{month:'short',day:'numeric'}),'',1)}${stat('users','c-fin','Registered',DRIVES.reduce((a,d)=>a+d.reg,0),'Across all regions')}${stat('heart','c-food','Places left',DRIVES.reduce((a,d)=>a+d.cap-d.reg,0),'Total capacity '+DRIVES.reduce((a,d)=>a+d.cap,0))}${stat('check','c-ok','Served last month','212','At 4 drives')}</div>`:''}
+    ${staff?'':donateBanner()}
     <div class="filters" style="margin-bottom:16px">${regs.map(r=>`<button class="pill ${S.driveFilter===r?'on':''}" data-act="drivefilter" data-v="${r}">${r}</button>`).join('')}</div>
     <div class="drives">${list.length? list.map(d=>staff?driveRowStaff(d,DRIVES.indexOf(d)):driveCard(d)).join('') : emptyState('cal','No drives in this region yet',staff?'Create one and it will appear on the public portal.':'Check back soon, or ask for help online at any time.',staff?`<button class="btn btn-primary btn-sm" data-act="newdrive">${I('plus')} New drive</button>`:`<a href="#apply" class="btn btn-ghost btn-sm">Apply for help</a>`)}</div>
-    ${staff&&S.driveForm?driveDrawer():''}`;
+    ${staff&&S.driveForm?driveDrawer():''}${!staff&&S.donate?donateDrawer():''}`;
   return staff ? body : `${pubHeader('#drives')}<div class="page">${body}</div>${pubFooter()}`;
 }
 
+// donations (public drives page)
+const DON_AMTS=['2000','5000','10000','25000'];
+const DON_METHODS=[['mmg','MMG mobile money'],['bank','Bank transfer'],['office','Pay at our office']];
+const DON_ITEMS=[['food','Food items'],['school','School supplies'],['clothes','Clothing'],['home','Household items']];
+const fmtG = n => 'GYD '+Number(n).toLocaleString('en-US');
+const dShort = d => new Date(d+'T12:00:00').toLocaleString('en',{month:'short',day:'numeric'});
+function donAmount(){ const f=S.donate; return f.amt==='other' ? Number(String(f.other).replace(/[,\s]/g,'')) : Number(f.amt); }
+function donateBanner(){
+  return `<section class="donate-band" aria-labelledby="don-h">
+    <span class="donate-ic" aria-hidden="true">${ID('heart')}</span>
+    <div class="donate-txt"><p class="donate-eyebrow">Every drive is stocked by people like you</p><h2 id="don-h">Help us reach more families</h2><p>Give money or items to the next drive in your region, or to wherever help is needed most.</p></div>
+    <button class="btn btn-donate" data-act="donate">${I('heart')} Donate here ${I('right')}</button>
+  </section>`;
+}
+function donateDrawer(){
+  const f=S.donate, money=f.mode==='money', drv=f.drive==='any'?null:DRIVES[+f.drive];
+  const where = drv ? `${esc(drv.t)} (${dShort(drv.d)})` : 'the drive that needs it most';
+  if(f.done){
+    const next = !money ? `Drop your items at ${drv?`${esc(drv.place)} on ${dShort(drv.d)}, ${esc(drv.time)}`:'the Launch NGO Office, Charlestown, Monday to Friday, 9:00 AM – 4:00 PM'}.`
+      : {mmg:'You will get an MMG payment request on your phone to approve.', bank:'We will send the bank details to your phone or email.', office:'Pay at the Launch NGO Office, Charlestown, Monday to Friday, 9:00 AM – 4:00 PM.'}[f.method];
+    return `<div class="scrim" data-act="closedonate"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="don-title">
+    <div class="dh"><div class="row between"><h2 id="don-title" style="font-size:20px">Thank you${f.name.trim()?', '+esc(f.name.trim().split(' ')[0]):''}!</h2><button class="iconbtn" data-act="closedonate" aria-label="Close">${I('x')}</button></div></div>
+    <div class="db"><div class="success" style="padding:10px 0"><div class="big">${I('check')}</div>
+      <p style="font-size:17px;margin-top:6px">${money?`Your gift of <b>${fmtG(donAmount())}</b>`:'Your gift of <b>'+f.items.map(k=>DON_ITEMS.find(x=>x[0]===k)[1].toLowerCase()).join(', ')+'</b>'} will go to ${where}.</p>
+      <p class="muted small" style="margin-top:10px">${next}${f.contact.trim()?' We will send a receipt to '+esc(f.contact.trim())+'.':''}</p></div>
+      <p class="tiny muted row" style="gap:6px;justify-content:center">${I('lock','')} This is a mockup. No payment is taken.</p></div>
+    <div class="df"><button class="btn btn-primary btn-block" data-act="closedonate">Done</button></div></aside>`;
+  }
+  return `<div class="scrim" data-act="closedonate"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="don-title">
+    <div class="dh"><div class="row between"><h2 id="don-title" style="font-size:20px">Donate to assistance drives</h2><button class="iconbtn" data-act="closedonate" aria-label="Close">${I('x')}</button></div><p class="small muted" style="margin-top:4px">Choose a drive, or let the NGO send your gift where it is needed most.</p></div>
+    <div class="db">
+      <div class="tabs" role="group" aria-label="Type of donation"><button class="${money?'on':''}" data-act="donmode" data-v="money" aria-pressed="${money}">${I('fin')} Give money</button><button class="${money?'':'on'}" data-act="donmode" data-v="items" aria-pressed="${!money}">${I('food')} Give items</button></div>
+      <div class="field"><label for="don-drive">Which drive?</label><select id="don-drive" class="select" data-dn="drive"><option value="any">Wherever it is needed most</option>${DRIVES.map((d,i)=>`<option value="${i}" ${f.drive===String(i)?'selected':''}>${esc(d.t)} · ${dShort(d.d)} · ${RSHORT(d.region)}</option>`).join('')}</select></div>
+      ${money?`<div class="field ${f.err?'has-err':''}"><span class="lbl-like" id="don-amt-l">Amount</span><div class="amt-grid" role="group" aria-labelledby="don-amt-l">${DON_AMTS.map(a=>`<button class="amt ${f.amt===a?'on':''}" data-act="donamt" data-v="${a}" aria-pressed="${f.amt===a}">${fmtG(a)}</button>`).join('')}<button class="amt ${f.amt==='other'?'on':''}" data-act="donamt" data-v="other" aria-pressed="${f.amt==='other'}">Other amount</button></div>
+        ${f.amt==='other'?`<label for="don-other" class="sr-only">Other amount in GYD</label><input id="don-other" class="input" style="margin-top:10px" data-dn="other" inputmode="numeric" value="${esc(f.other)}" placeholder="Amount in GYD, e.g. 7,500" ${f.err?'aria-invalid="true" aria-describedby="don-err"':''}>`:''}
+        ${f.err?`<span class="err" id="don-err">${I('alert')} ${f.err}</span>`:''}</div>
+      <div class="field"><span class="lbl-like" id="don-m-l">How would you like to give?</span><div class="filters" role="group" aria-labelledby="don-m-l">${DON_METHODS.map(([k,l])=>`<button class="pill ${f.method===k?'on':''}" data-act="donmethod" data-v="${k}" aria-pressed="${f.method===k}">${l}</button>`).join('')}</div></div>`
+      :`<div class="field ${f.err?'has-err':''}"><span class="lbl-like" id="don-i-l">What can you give?</span><div class="filters" role="group" aria-labelledby="don-i-l">${DON_ITEMS.map(([k,l])=>`<button class="pill ${f.items.includes(k)?'on':''}" data-act="donitem" data-v="${k}" aria-pressed="${f.items.includes(k)}">${l}</button>`).join('')}</div>${f.err?`<span class="err" id="don-err">${I('alert')} ${f.err}</span>`:''}</div>
+      <div class="alert alert-info">${I('pin')}<div><b>Drop-off</b><br><span class="small">${drv?`${esc(drv.place)} · ${dShort(drv.d)}, ${esc(drv.time)}`:'Launch NGO Office, Charlestown · Monday to Friday, 9:00 AM – 4:00 PM'}</span></div></div>`}
+      <div class="form-grid"><div class="field"><label for="don-name">Your name <span class="muted">(optional)</span></label><input id="don-name" class="input" data-dn="name" value="${esc(f.name)}" placeholder="Leave blank to give anonymously" autocomplete="name"></div>
+      <div class="field"><label for="don-contact">Phone or email for a receipt <span class="muted">(optional)</span></label><input id="don-contact" class="input" data-dn="contact" value="${esc(f.contact)}" placeholder="+592 6xx xxxx" autocomplete="tel"></div></div>
+      <p class="tiny muted row" style="gap:6px">${I('lock','')} This is a mockup. No payment is taken and nothing leaves your browser.</p>
+    </div>
+    <div class="df"><button class="btn btn-donate btn-block" data-act="dongo">${I('heart')} ${money?(f.amt!=='other'?'Donate '+fmtG(f.amt):'Donate'):'Pledge my items'}</button></div></aside>`;
+}
 // apply wizard
 const WSTEPS = ['Type of help','About you','Your situation','Review & send'];
 function fld(key,label,ph,hint,mode){
@@ -694,11 +740,11 @@ function render(){
   document.querySelectorAll('.field').forEach((f,i)=>{ const l=f.querySelector(':scope > label'), c=f.querySelector('input,select,textarea'); if(l&&c&&!l.htmlFor){ if(!c.id) c.id='fx'+i; l.htmlFor=c.id; } });
   if(hadDrawer) document.querySelectorAll('.drawer,.scrim').forEach(e=>e.style.animation='none');
   if(fkey){ const el=document.querySelector(fkey); if(el && !['gsearch','auditq'].includes(el.id)) el.focus({preventScroll:true}); }
-  const dlg=document.querySelector('.drawer [data-act=close],.drawer [data-act=closedrive]'); if(dlg && !document.activeElement?.closest?.('.drawer')) dlg.focus();
+  const dlg=document.querySelector('.drawer [data-act=close],.drawer [data-act=closedrive],.drawer [data-act=closedonate]'); if(dlg && !document.activeElement?.closest?.('.drawer')) dlg.focus();
   document.title = 'PATH · ' + ({'#home':'Get help','#apply':'Apply','#track':'Track my request','#drives':'Assistance drives'}[h] || 'Staff workspace');
 }
 const STAFF_ROUTES=['#dashboard','#screening','#cases','#allcases','#reports','#managedrives','#drives-staff','#admin','#admin-users','#admin-audit','#admin-health'];
-window.addEventListener('hashchange', ()=>{ S.notifOpen=false; S.driveForm=null; if(!location.hash.startsWith('#screening')) S.sel=null;
+window.addEventListener('hashchange', ()=>{ S.notifOpen=false; S.driveForm=null; S.donate=null; if(!location.hash.startsWith('#screening')) S.sel=null;
   const staffish = STAFF_ROUTES.includes(location.hash)||location.hash.startsWith('#case-');
   if(staffish && !window.__noSkel){ S.loading=true; render(); clearTimeout(window.__lt); window.__lt=setTimeout(()=>{ S.loading=false; render(); },420); } else render();
   window.scrollTo(0,0); });
@@ -747,6 +793,16 @@ document.addEventListener('click', e=>{
     case 'newdrive': S.driveForm={i:null,t:'',type:'food',region:REGIONS[0],d:'2026-12-20',time:'9:00 AM – 1:00 PM',place:'',cap:100,spots:''}; render(); setTimeout(()=>{const x=$('#dv-t'); if(x) x.focus();},50); break;
     case 'editdrive': { const d=DRIVES[+v]; S.driveForm={i:+v,...d}; render(); break; }
     case 'closedrive': S.driveForm=null; render(); break;
+    case 'donate': S.donate={mode:'money',amt:'5000',other:'',drive:'any',method:'mmg',items:['food'],name:'',contact:'',err:'',done:false}; render(); break;
+    case 'closedonate': S.donate=null; render(); { const b=document.querySelector('[data-act=donate]'); if(b) b.focus(); } break;
+    case 'donmode': S.donate.mode=v; S.donate.err=''; render(); break;
+    case 'donamt': S.donate.amt=v; S.donate.err=''; render(); if(v==='other') setTimeout(()=>{const x=$('#don-other'); if(x) x.focus();},30); break;
+    case 'donmethod': S.donate.method=v; render(); break;
+    case 'donitem': { const f=S.donate; f.items=f.items.includes(v)?f.items.filter(x=>x!==v):[...f.items,v]; f.err=''; render(); break; }
+    case 'dongo': { const f=S.donate;
+      if(f.mode==='money'){ const n=donAmount(); if(!(n>=100)){ f.err='Enter an amount of at least GYD 100.'; render(); const x=$('#don-other'); if(x) x.focus(); break; } }
+      else if(!f.items.length){ f.err='Choose at least one kind of item.'; render(); break; }
+      f.err=''; f.done=true; render(); break; }
     case 'savedrive': { const f=S.driveForm; if(!f.t.trim()||!f.place.trim()){ f.err='Add a title and a location before publishing.'; render(); break; }
       const d={d:f.d,t:f.t.trim(),type:f.type,region:f.region,place:f.place.trim(),time:f.time,spots:f.spots||(f.cap+' places'),cap:+f.cap||1,reg:f.i==null?0:DRIVES[f.i].reg};
       if(f.i==null) DRIVES.push(d); else DRIVES[f.i]=d; DRIVES.sort((a,b)=>a.d.localeCompare(b.d)); S.driveForm=null; render(); toast(f.i==null?'Drive published · applicants in the region will be notified':'Drive updated'); break; }
@@ -766,6 +822,7 @@ document.addEventListener('submit', e=>{
 });
 document.addEventListener('input', e=>{
   if(e.target.dataset.df){ S.driveForm[e.target.dataset.df]=e.target.value; return; }
+  if(e.target.dataset.dn && S.donate){ S.donate[e.target.dataset.dn]=e.target.value; return; }
   if(e.target.id==='gsearch' || e.target.id==='auditq'){
     const id=e.target.id, pos=e.target.selectionStart;
     if(id==='gsearch') S.q=e.target.value; else S.auditF.q=e.target.value;
@@ -775,6 +832,7 @@ document.addEventListener('input', e=>{
 document.addEventListener('change', e=>{
   const f=e.target.dataset.f; if(f) S.wiz.data[f]=e.target.value;
   if(e.target.dataset.df){ const k=e.target.dataset.df; S.driveForm[k]=e.target.value; return; }
+  if(e.target.dataset.dn && S.donate){ S.donate[e.target.dataset.dn]=e.target.value; if(e.target.tagName==='SELECT') render(); return; }
   if(e.target.dataset.act==='auditwho'){ S.auditF.who=e.target.value==='All users'?'All':e.target.value; render(); return; }
   if(e.target.dataset.act==='orgsel'){ S.org=e.target.value; render(); toast(e.target.value==='p2'?'Viewing Partner NGO 2 (onboarding preview)':'Organisation switched'); return; }
   if(e.target.dataset.act==='rolesel'){ S.role=e.target.value; store(); S.sel=null; location.hash=ROLES[S.role].home; render(); return; }
@@ -782,7 +840,8 @@ document.addEventListener('change', e=>{
 });
 document.addEventListener('keydown', e=>{
   if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('tr[data-act=open],tr[data-href]')){ e.preventDefault(); if(e.target.dataset.href) location.hash=e.target.dataset.href; else { S.sel=e.target.dataset.v; render(); } return; }
-  if(e.key==='Escape' && S.driveForm){ S.driveForm=null; render(); return; } if(e.key==='Enter' && e.target.id==='trackin'){ S.trackRef=e.target.value.trim().toUpperCase(); render(); } if(e.key==='Escape' && S.sel){ S.sel=null; render(); } });
+  if(e.key==='Escape' && S.driveForm){ S.driveForm=null; render(); return; }
+  if(e.key==='Escape' && S.donate){ S.donate=null; render(); const b=document.querySelector('[data-act=donate]'); if(b) b.focus(); return; } if(e.key==='Enter' && e.target.id==='trackin'){ S.trackRef=e.target.value.trim().toUpperCase(); render(); } if(e.key==='Escape' && S.sel){ S.sel=null; render(); } });
 
 // boot
 try{ const r=localStorage.getItem('path-demo-role'); if(r && ROLES[r]) S.role=r; }catch(e){}
